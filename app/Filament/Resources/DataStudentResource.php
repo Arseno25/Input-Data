@@ -83,7 +83,7 @@ class DataStudentResource extends Resource
                             echo $pdf->stream();
                             Notification::make()
                             ->title('Export PDF')
-                            ->body('Berhasil mengexport PDF')
+                            ->body('Berhasil mengexport '. 'data-' . Carbon::now()->format('Y-m-d H:m:s') . '.pdf')
                             ->success()
                             ->icon('heroicon-o-check-circle')
                             ->send();
