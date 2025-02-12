@@ -14,6 +14,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Notifications\Notification;
 
 class DataStudentResource extends Resource
 {
@@ -67,6 +70,25 @@ class DataStudentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('Export PDF')
+                    ->icon('heroicon-o-document-arrow-up')
+                    ->color('danger')
+                    ->action( function(){
+                        $records = DataStudent::orderBy('id')->get()->toArray();
+                        $pdf = Pdf::loadView('pdfs.data', ['records' => $records]);
+
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->stream();
+                            Notification::make()
+                            ->title('Export PDF')
+                            ->body('Berhasil mengexport PDF')
+                            ->success()
+                            ->icon('heroicon-o-check-circle')
+                            ->send();
+                        }, 'data-' . Carbon::now()->format('Y-m-d') . '.pdf');
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
