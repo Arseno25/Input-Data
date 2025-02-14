@@ -13,7 +13,8 @@ return [
         'cluster' => null,
     ],
 
-    'tenant_model' => null,
+    'tenant_model' => 'App\Models\ClassRoom',
+
 
     'auth_provider_model' => [
         'fqcn' => 'App\\Models\\User',
