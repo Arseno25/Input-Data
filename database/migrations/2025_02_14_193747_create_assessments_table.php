@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('assessments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->nullable()->constrained('students');
-            $table->foreignId('class_id')->nullable()->constrained('class_rooms');
-            $table->Integer('assessment_no');
+            $table->foreignId('room_id')->nullable()->constrained('rooms')->onDelete('cascade');
+            $table->json('score')->nullable();
             $table->timestamps();
         });
     }

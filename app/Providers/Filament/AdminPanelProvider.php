@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Models\ClassRoom;
+use App\Models\Room;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->tenant(ClassRoom::class, ownershipRelationship: 'users')
+            ->tenant(Room::class, ownershipRelationship: 'users')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -57,6 +57,9 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->tenantMiddleware([
+                \BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant::class,
+            ], isPersistent: true)
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])

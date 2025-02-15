@@ -21,24 +21,24 @@
     </style>
 </head>
 <body>
-    <h1>Data Mahasiswa</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Nama</th>
-                <th>NIM</th>
-                <th>Nilai</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($records as $record)
-                <tr>
-                    <td>{{ $record['name'] }}</td>
-                    <td>{{ $record['nim'] }}</td>
-                    <td>{{ $record['score'] }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+<h1>Data Mahasiswa</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Nama</th>
+        <th>Kelas</th>
+        <th>Nilai</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach ($records as $record)
+        <tr>
+            <td>{{ $record->student->name }}</td>
+            <td>{{ $record->room->name }}</td>
+            <td>{{ $record->score_as_string }}</td>
+        </tr>
+    @endforeach
+    </tbody>
+</table>
 </body>
 </html>

@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\StudentResource\Pages;
+use App\Filament\Resources\StudentResource\RelationManagers;
+use App\Models\Student;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
+use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
+use Spatie\SimpleExcel\SimpleExcelReader;
+
+class StudentResource extends Resource
+{
+    protected static ?string $tenantOwnershipRelationshipName = 'room';
+
+    protected static ?string $model = Student::class;
+
+    protected static ?string $navigationGroup = 'Data Management';
+
+    protected static ?string $navigationLabel = 'Student';
+
+    protected static ?string $pluralLabel = 'Students';
+
+    protected static ?string $label = 'Student';
+
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->label('Name')
+                    ->required(),
+                Forms\Components\TextInput::make('nim')
+                    ->label('NIM')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\Select::make('room_id')
+                    ->label('Class')
+                    ->searchable()
+                    ->preload()
+                   ->relationship('room', 'name')
+                    ->required(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nim')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('room.name')
+                    ->label('Class')
+                    ->searchable()
+                    ->sortable(),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('upload file')
+                    ->label('Upload Student')
+                    ->icon('heroicon-o-document-arrow-up')
+                    ->color('success')
+                    ->modal()
+                    ->modalWidth(MaxWidth::Medium)
+                    ->form([
+                        Forms\Components\FileUpload::make('file')
+                            ->label('File')
+                            ->disk('local')
+                            ->preserveFilenames()
+                            ->uploadingMessage('Uploading attachment...')
+                            ->placeholder('Choose a file to upload')
+                            ->acceptedFileTypes([
+                                'text/csv',
+                                'csv',
+                                'application/csv',
+                                'text/comma-separated-values',
+                                'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/vnd.ms-excel.sheet.macroEnabled.12',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+                                'application/vnd.ms-excel.template.macroEnabled.12',
+                                'application/vnd.ms-excel',
+                                'application/vnd.ms-excel.addin.macroEnabled.12',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (array $data, Action $action) {
+                        $file = $data['file'];
+
+                        $path = Storage::disk('local')->path($file);
+
+                        SimpleExcelReader::create($path)
+                            ->useHeaders(['Name', 'Nim', 'Room ID'])
+                            ->getRows()
+                            ->each(function(array $rowProperties) {
+                                Student::updateOrCreate(
+                                    ['nim' => $rowProperties['Nim']],
+                                    [
+                                        'name' => $rowProperties['Name'],
+                                        'room_id' => $rowProperties['Room ID'] !== '' ? $rowProperties['Room ID'] : null,
+                                    ]
+                                );
+                            });
+                }),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListStudents::route('/'),
+            'create' => Pages\CreateStudent::route('/create'),
+            'edit' => Pages\EditStudent::route('/{record}/edit'),
+        ];
+    }
+}

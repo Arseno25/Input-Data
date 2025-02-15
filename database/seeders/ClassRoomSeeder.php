@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ClassRoom;
+use App\Models\Room;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,16 +13,12 @@ class ClassRoomSeeder extends Seeder
      */
     public function run(): void
     {
-        $classNames = ['Teknik Informatika', 'Sistem Informasi'];
-        $classCodes = ['A', 'B', 'C', 'D', 'E'];
+        $classNames = ['Teknik Informatika', 'Sistem Informasi', 'Teknik Elektro', 'Teknik Mesin', 'Teknik Sipil'];
 
         foreach ($classNames as $className) {
-            foreach ($classCodes as $classCode) {
-                ClassRoom::create([
-                    'class_name' => $className,
-                    'class_code' => $classCode,
+                Room::create([
+                    'name' => $className,
                 ]);
             }
-        }
     }
 }

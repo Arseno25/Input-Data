@@ -1,0 +1,169 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\AssessmentResource\Pages;
+use App\Filament\Resources\AssessmentResource\RelationManagers;
+use App\Models\Assessment;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Filament\Facades\Filament;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class AssessmentResource extends Resource
+{
+    protected static ?string $tenantOwnershipRelationshipName = 'room';
+
+    protected static ?string $model = Assessment::class;
+
+    protected static ?string $navigationGroup = 'Data Management';
+
+    protected static ?string $navigationLabel = 'Assessment';
+
+    protected static ?string $pluralLabel = 'Assessments';
+
+    protected static ?string $label = 'Assessment';
+
+    protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('student', function (Builder $query) {
+                $query->where('room_id', Filament::getTenant()->getKey());
+            });
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Student Information')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('student_id')
+                            ->label('Student')
+                            ->searchable()
+                            ->preload()
+                            ->relationship('student', 'name', function (Builder $query) {
+                                $query->where('room_id', Filament::getTenant()->getKey());
+                            })
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $student = \App\Models\Student::find($state);
+                                if ($student) {
+                                    $set('room_id', $student->room_id);
+                                }
+                            }),
+                        Forms\Components\Select::make('room_id')
+                            ->label('Class')
+                            ->relationship('room', 'name')
+                            ->placeholder(' ')
+                            ->disabled()
+                            ->required(),
+                ]),
+                Forms\Components\Section::make('Assessment Information')
+                    ->columnSpanFull()
+                    ->schema([
+                Forms\Components\Repeater::make('score')
+                    ->label('Score')
+                    ->columns(4)
+                    ->schema([
+                        Forms\Components\TextInput::make('assessment_no')
+                            ->label('Assessment No')
+                            ->required()
+                            ->columnSpanFull()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('score_1')
+                            ->label('Score 1'),
+                        Forms\Components\TextInput::make('score_2')
+                            ->label('Score 2'),
+                        Forms\Components\TextInput::make('score_3')
+                            ->label('Score 3'),
+                        Forms\Components\TextInput::make('score_4')
+                            ->label('Score 4'),
+                        Forms\Components\TextInput::make('score_5')
+                            ->label('Score 5'),
+                        Forms\Components\TextInput::make('score_6')
+                            ->label('Score 6'),
+                        Forms\Components\TextInput::make('score_7')
+                            ->label('Score 7'),
+                        Forms\Components\TextInput::make('score_8')
+                            ->label('Score 8'),
+                    ]),
+                ]),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('student.name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('room.name')
+                    ->label('Class')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_as_string')
+                    ->label('Score')
+                    ->searchable()
+                    ->sortable(),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('Export PDF')
+                    ->icon('heroicon-o-document-arrow-up')
+                    ->color('danger')
+                    ->action( function(){
+                        $records = Assessment::with(['student', 'room'])->get();
+                        $pdf = Pdf::loadView('pdfs.data', ['records' => $records]);
+
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->stream();
+                            Notification::make()
+                                ->title('Export PDF')
+                                ->body('Berhasil mengexport '. 'data-' . Carbon::now()->format('Y-m-d H:m:s') . '.pdf')
+                                ->success()
+                                ->icon('heroicon-o-check-circle')
+                                ->send();
+                        }, 'data-' . Carbon::now()->format('Y-m-d') . '.pdf');
+                    }),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListAssessments::route('/'),
+            'create' => Pages\CreateAssessment::route('/create'),
+            'edit' => Pages\EditAssessment::route('/{record}/edit'),
+        ];
+    }
+}

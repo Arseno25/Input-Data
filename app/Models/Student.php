@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Student extends Model
 {
     protected $fillable = [
-        'student_name',
+        'name',
         'nim',
-        'class_id',
+        'room_id',
     ];
 
-    public function classroom(): BelongsTo
+    public function room(): BelongsTo
     {
-        return $this->belongsTo(Classroom::class);
+        return $this->belongsTo(Room::class);
     }
 }

@@ -3,21 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Assessment extends Model
 {
     protected $fillable = [
         'student_id',
-        'class_id',
-        'assessment_no',
-        'score_1',
-        'score_2',
-        'score_3',
-        'score_4',
-        'score_5',
-        'score_6',
-        'score_7',
-        'score_8',
+        'room_id',
+       'score',
     ];
+
+    protected $casts = [
+        'score' => 'json',
+    ];
+
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function getScoreAsStringAttribute(): string
+    {
+        return json_encode($this->score);
+    }
 
 }

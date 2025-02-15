@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,9 +19,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
+    protected static ?string $tenantOwnershipRelationshipName = 'rooms';
+
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'User Management';
+
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static bool $isScopedToTenant = false;
 
     public static function form(Form $form): Form
     {
@@ -32,12 +39,18 @@ class UserResource extends Resource
                 TextInput::make('email')
                 ->label('Email')
                 ->email()
-                ->required()
-                ->numeric(),
+                ->required(),
                 Select::make('roles')
                 ->label('Role')
                 ->preload()
                 ->relationship('roles', 'name')
+                ->required(),
+                Select::make('rooms')
+                ->label('Class')
+                ->preload()
+                ->multiple()
+                ->searchable()
+                ->relationship('rooms', 'name')
                 ->required(),
             ]);
     }
@@ -54,7 +67,14 @@ class UserResource extends Resource
                         'users' => 'warning',
                         'super_admin' => 'danger',
                         default => 'success',
-                    })
+                    }),
+                Tables\Columns\TextColumn::make('rooms.name')
+                    ->label('Class')
+                    ->searchable()
+                    ->badge()
+                    ->color(Color::Violet)
+                    ->limitList(3)
+                    ->sortable(),
             ])
             ->filters([
                 //

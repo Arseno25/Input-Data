@@ -3,7 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\ClassRoom;
+use App\Models\Room;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasTenants
+class User extends Authenticatable implements HasTenants, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -53,18 +54,32 @@ class User extends Authenticatable implements HasTenants
         ];
     }
 
-    public function teams(): BelongsToMany
+    public function rooms(): BelongsToMany
     {
-        return $this->belongsToMany(ClassRoom::class);
+        return $this->belongsToMany(Room::class);
     }
  
     public function getTenants(Panel $panel): Collection
     {
-        return $this->teams;
+        return $this->rooms;
     }
- 
+
     public function canAccessTenant(Model $tenant): bool
     {
-        return $this->teams()->whereKey($tenant)->exists();
+        return $this->rooms()->whereKey($tenant)->exists();
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($panel->getId() !== 'admin') {
+            return false;
+        }
+
+        if ($this->hasRole(config('filament-shield.super_admin.name'))) {
+            return true;
+        }
+
+        $allowedRoles = Role::where('name', '!=', 'super_admin')->pluck('name')->toArray();
+        return $this->hasAnyRole($allowedRoles);
     }
 }
