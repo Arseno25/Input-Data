@@ -8,6 +8,7 @@ use App\Models\Room;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
@@ -62,6 +63,8 @@ class ClassRoomResource extends Resource
                 Tables\Columns\TextColumn::make('users.name')
                     ->label('Lecturer')
                     ->searchable()
+                    ->badge()
+                    ->color(Color::Blue)
                     ->sortable(),
             ])
             ->filters([

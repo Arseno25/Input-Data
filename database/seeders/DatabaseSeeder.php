@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
         Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);
 
         Room::get()->each(function (Room $classRoom) use ($admin) {
-            $classRoom->users()->attach($admin);
+            $classRoom->users()->attach([$admin->getKey()]);
         });
     }
 }
