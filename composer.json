@@ -13,6 +13,8 @@
         "filament/filament": "^3.2",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "psr/simple-cache": "2.0",
+        "pxlrbt/filament-excel": "^2.4",
         "spatie/simple-excel": "^3.7"
     },
     "require-dev": {

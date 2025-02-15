@@ -10,6 +10,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
@@ -58,7 +59,7 @@ class User extends Authenticatable implements HasTenants, FilamentUser
     {
         return $this->belongsToMany(Room::class);
     }
- 
+
     public function getTenants(Panel $panel): Collection
     {
         return $this->rooms;
@@ -81,5 +82,10 @@ class User extends Authenticatable implements HasTenants, FilamentUser
 
         $allowedRoles = Role::where('name', '!=', 'super_admin')->pluck('name')->toArray();
         return $this->hasAnyRole($allowedRoles);
+    }
+
+    public function assessment(): HasMany
+    {
+        return $this->hasMany(Assessment::class);
     }
 }

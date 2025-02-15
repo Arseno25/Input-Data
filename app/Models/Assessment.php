@@ -10,7 +10,16 @@ class Assessment extends Model
     protected $fillable = [
         'student_id',
         'room_id',
-       'score',
+        'lecturer_id',
+        'assessment_name',
+        'score_1',
+        'score_2',
+        'score_3',
+        'score_4',
+        'score_5',
+        'score_6',
+        'score_7',
+        'score_8',
     ];
 
     protected $casts = [
@@ -25,6 +34,11 @@ class Assessment extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'lecturer_id');
     }
 
     public function getScoreAsStringAttribute(): string

@@ -16,6 +16,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class AssessmentResource extends Resource
 {
@@ -35,7 +39,14 @@ class AssessmentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->hasRole('super_admin')) {
+            return $query;
+        }
+
+        return $query
+            ->where('lecturer_id', auth()->id())
             ->whereHas('student', function (Builder $query) {
                 $query->where('room_id', Filament::getTenant()->getKey());
             });
@@ -69,37 +80,42 @@ class AssessmentResource extends Resource
                             ->placeholder(' ')
                             ->disabled()
                             ->required(),
-                ]),
+                        Forms\Components\Hidden::make('lecturer_id')
+                            ->default(auth()->user()->getKey()),
+                    ]),
                 Forms\Components\Section::make('Assessment Information')
                     ->columnSpanFull()
-                    ->schema([
-                Forms\Components\Repeater::make('score')
-                    ->label('Score')
                     ->columns(4)
                     ->schema([
-                        Forms\Components\TextInput::make('assessment_no')
-                            ->label('Assessment No')
+                        Forms\Components\TextInput::make('assessment_name')
+                            ->label('Assessment Name')
                             ->required()
-                            ->columnSpanFull()
-                            ->numeric(),
+                            ->columnSpanFull(),
                         Forms\Components\TextInput::make('score_1')
-                            ->label('Score 1'),
+                            ->label('Score 1')
+                            ->numeric(),
                         Forms\Components\TextInput::make('score_2')
-                            ->label('Score 2'),
+                            ->label('Score 2')
+                            ->numeric(),
                         Forms\Components\TextInput::make('score_3')
-                            ->label('Score 3'),
+                            ->label('Score 3')
+                            ->numeric(),
                         Forms\Components\TextInput::make('score_4')
-                            ->label('Score 4'),
+                            ->label('Score 4')
+                            ->numeric(),
                         Forms\Components\TextInput::make('score_5')
-                            ->label('Score 5'),
+                            ->label('Score 5')
+                            ->numeric(),
                         Forms\Components\TextInput::make('score_6')
-                            ->label('Score 6'),
+                            ->label('Score 6')
+                            ->numeric(),
                         Forms\Components\TextInput::make('score_7')
-                            ->label('Score 7'),
+                            ->label('Score 7')
+                            ->numeric(),
                         Forms\Components\TextInput::make('score_8')
-                            ->label('Score 8'),
+                            ->label('Score 8')
+                            ->numeric(),
                     ]),
-                ]),
             ]);
     }
 
@@ -108,14 +124,48 @@ class AssessmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('student.name')
+                    ->label('Name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('student.nim')
+                    ->label('NIM')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('room.name')
                     ->label('Class')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('score_as_string')
-                    ->label('Score')
+                Tables\Columns\TextColumn::make('assessment_name')
+                    ->label('Assessment')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_1')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_2')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_3')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_4')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_5')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_6')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_7')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('score_8')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Lecturer')
+                    ->hidden(!auth()->user()->hasRole('super_admin'))
                     ->searchable()
                     ->sortable(),
             ])
@@ -126,10 +176,28 @@ class AssessmentResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
+                ExportAction::make('Export Excel')
+                    ->label('Export Excel')
+                    ->exports([
+                        ExcelExport::make()->withColumns([
+                            Column::make('student.name')->heading('Nama Mahasiswa'),
+                            Column::make('student.nim')->heading('NIM'),
+                            Column::make('assessment_name')->heading('Penilaian'),
+                            Column::make('score_1')->heading(''),
+                            Column::make('score_2')->heading(''),
+                            Column::make('score_3')->heading(''),
+                            Column::make('score_4')->heading(''),
+                            Column::make('score_5')->heading(''),
+                            Column::make('score_6')->heading(''),
+                            Column::make('score_7')->heading(''),
+                            Column::make('score_8')->heading(''),
+                        ])
+                            ->withFilename('assessment-' . Carbon::now()->format('Y-m-d'))
+                    ]),
                 Tables\Actions\Action::make('Export PDF')
                     ->icon('heroicon-o-document-arrow-up')
                     ->color('danger')
-                    ->action( function(){
+                    ->action(function () {
                         $records = Assessment::with(['student', 'room'])->get();
                         $pdf = Pdf::loadView('pdfs.data', ['records' => $records]);
 
@@ -137,7 +205,7 @@ class AssessmentResource extends Resource
                             echo $pdf->stream();
                             Notification::make()
                                 ->title('Export PDF')
-                                ->body('Berhasil mengexport '. 'data-' . Carbon::now()->format('Y-m-d H:m:s') . '.pdf')
+                                ->body('Berhasil mengexport ' . 'data-' . Carbon::now()->format('Y-m-d H:m:s') . '.pdf')
                                 ->success()
                                 ->icon('heroicon-o-check-circle')
                                 ->send();

@@ -10,11 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('room_user', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->timestamps();
+        Schema::table('assessments', function (Blueprint $table) {
+            $table->foreignId('lecturer_id')->after('room_id')->nullable()->constrained('users')->onDelete('cascade');
         });
     }
 
@@ -23,6 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('class_room_user');
+        Schema::table('assessments', function (Blueprint $table) {
+            $table->dropColumn('lecturer_id');
+        });
     }
 };

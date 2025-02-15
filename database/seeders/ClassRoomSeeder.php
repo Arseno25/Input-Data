@@ -13,7 +13,7 @@ class ClassRoomSeeder extends Seeder
      */
     public function run(): void
     {
-        $classNames = ['Teknik Informatika', 'Sistem Informasi', 'Teknik Elektro', 'Teknik Mesin', 'Teknik Sipil'];
+        $classNames = ['Teknik Informatika'];
 
         foreach ($classNames as $className) {
                 Room::create([
