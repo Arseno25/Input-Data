@@ -30,6 +30,7 @@ class AssessmentExporter extends Exporter
             ExportColumn::make('student.name')->label('Nama Mahasiswa'),
             ExportColumn::make('student.nim')->label('NIM'),
             ExportColumn::make('room.name')->label('Kelas'),
+            ExportColumn::make('assessment_stage')->label('Tahap Penilaian'),
             ExportColumn::make('assessment')->label('Penilaian')
         ];
     }
@@ -48,9 +49,7 @@ class AssessmentExporter extends Exporter
     {
         return (new Style())
             ->setFontBold()
-            ->setFontName('Times New Roman')
             ->setShouldWrapText()
-            ->setShouldShrinkToFit()
             ->setBackgroundColor(Color::rgb(77, 255, 94))
             ->setCellAlignment(CellAlignment::CENTER)
             ->setCellVerticalAlignment(CellVerticalAlignment::CENTER);
