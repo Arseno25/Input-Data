@@ -14,15 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('student_id')->nullable()->constrained('students');
             $table->foreignId('room_id')->nullable()->constrained('rooms')->onDelete('cascade');
-            $table->string('assessment_name')->nullable();
-            $table->integer('score_1')->nullable();
-            $table->integer('score_2')->nullable();
-            $table->integer('score_3')->nullable();
-            $table->integer('score_4')->nullable();
-            $table->integer('score_5')->nullable();
-            $table->integer('score_6')->nullable();
-            $table->integer('score_7')->nullable();
-            $table->integer('score_8')->nullable();
+            $table->string('assessment_stage')->nullable();
+            $table->json('assessment')->nullable();
             $table->timestamps();
         });
     }

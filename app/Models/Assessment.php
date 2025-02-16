@@ -11,19 +11,12 @@ class Assessment extends Model
         'student_id',
         'room_id',
         'lecturer_id',
-        'assessment_name',
-        'score_1',
-        'score_2',
-        'score_3',
-        'score_4',
-        'score_5',
-        'score_6',
-        'score_7',
-        'score_8',
+        'assessment_stage',
+        'assessment',
     ];
 
     protected $casts = [
-        'score' => 'json',
+        'assessment' => 'array',
     ];
 
     public function room(): BelongsTo
@@ -39,11 +32,6 @@ class Assessment extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'lecturer_id');
-    }
-
-    public function getScoreAsStringAttribute(): string
-    {
-        return json_encode($this->score);
     }
 
 }

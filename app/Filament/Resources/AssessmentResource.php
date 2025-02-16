@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\AssessmentExporter;
 use App\Filament\Resources\AssessmentResource\Pages;
 use App\Filament\Resources\AssessmentResource\RelationManagers;
 use App\Models\Assessment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,6 +18,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -87,34 +90,23 @@ class AssessmentResource extends Resource
                     ->columnSpanFull()
                     ->columns(4)
                     ->schema([
-                        Forms\Components\TextInput::make('assessment_name')
-                            ->label('Assessment Name')
+                        Forms\Components\Select::make('assessment_stage')
+                            ->label('Assessment Stage')
+                            ->columnSpanFull()
+                            ->options([
+                                'Stage 1' => 'Stage 1',
+                                'Stage 2' => 'Stage 2',
+                                'Stage 3' => 'Stage 3',
+                                'Stage 4' => 'Stage 4',
+                            ])
+                            ->required(),
+                        Forms\Components\KeyValue::make('assessment')
                             ->required()
+                            ->helperText(new HtmlString('Score Label is for the label of the score (e.g., Score 1), and Value is for the score itself (e.g., 100).'))
+                            ->valueLabel('Score')
+                            ->keyLabel('Score Label')
+                            ->addActionLabel('Add Score')
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('score_1')
-                            ->label('Score 1')
-                            ->numeric(),
-                        Forms\Components\TextInput::make('score_2')
-                            ->label('Score 2')
-                            ->numeric(),
-                        Forms\Components\TextInput::make('score_3')
-                            ->label('Score 3')
-                            ->numeric(),
-                        Forms\Components\TextInput::make('score_4')
-                            ->label('Score 4')
-                            ->numeric(),
-                        Forms\Components\TextInput::make('score_5')
-                            ->label('Score 5')
-                            ->numeric(),
-                        Forms\Components\TextInput::make('score_6')
-                            ->label('Score 6')
-                            ->numeric(),
-                        Forms\Components\TextInput::make('score_7')
-                            ->label('Score 7')
-                            ->numeric(),
-                        Forms\Components\TextInput::make('score_8')
-                            ->label('Score 8')
-                            ->numeric(),
                     ]),
             ]);
     }
@@ -135,32 +127,8 @@ class AssessmentResource extends Resource
                     ->label('Class')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('assessment_name')
+                Tables\Columns\TextColumn::make('assessment')
                     ->label('Assessment')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_1')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_2')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_3')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_4')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_5')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_6')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_7')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('score_8')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
@@ -176,25 +144,16 @@ class AssessmentResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
-                ExportAction::make('Export Excel')
+                Tables\Actions\ExportAction::make()
                     ->label('Export Excel')
-                    ->exports([
-                        ExcelExport::make()->withColumns([
-                            Column::make('student.name')->heading('Nama Mahasiswa'),
-                            Column::make('student.nim')->heading('NIM'),
-                            Column::make('assessment_name')->heading('Penilaian'),
-                            Column::make('score_1')->heading(''),
-                            Column::make('score_2')->heading(''),
-                            Column::make('score_3')->heading(''),
-                            Column::make('score_4')->heading(''),
-                            Column::make('score_5')->heading(''),
-                            Column::make('score_6')->heading(''),
-                            Column::make('score_7')->heading(''),
-                            Column::make('score_8')->heading(''),
-                        ])
-                            ->withFilename('assessment-' . Carbon::now()->format('Y-m-d'))
+                    ->icon('heroicon-o-document-arrow-up')
+                    ->color('success')
+                    ->exporter(AssessmentExporter::class)
+                    ->formats([
+                        ExportFormat::Xlsx
                     ]),
                 Tables\Actions\Action::make('Export PDF')
+                    ->label('Export PDF')
                     ->icon('heroicon-o-document-arrow-up')
                     ->color('danger')
                     ->action(function () {
