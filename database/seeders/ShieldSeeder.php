@@ -12,7 +12,7 @@ class ShieldSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $rolesWithPermissions = '[{"name":"super_admin","guard_name":"web","permissions":["view_assessment","view_any_assessment","create_assessment","update_assessment","restore_assessment","restore_any_assessment","replicate_assessment","reorder_assessment","delete_assessment","delete_any_assessment","force_delete_assessment","force_delete_any_assessment","view_class::room","view_any_class::room","create_class::room","update_class::room","restore_class::room","restore_any_class::room","replicate_class::room","reorder_class::room","delete_class::room","delete_any_class::room","force_delete_class::room","force_delete_any_class::room","view_role","view_any_role","create_role","update_role","delete_role","delete_any_role","view_student","view_any_student","create_student","update_student","restore_student","restore_any_student","replicate_student","reorder_student","delete_student","delete_any_student","force_delete_student","force_delete_any_student","view_user","view_any_user","create_user","update_user","restore_user","restore_any_user","replicate_user","reorder_user","delete_user","delete_any_user","force_delete_user","force_delete_any_user"]},{"name":"dosen","guard_name":"web","permissions":["view_assessment","view_any_assessment","create_assessment","update_assessment","restore_assessment","restore_any_assessment","replicate_assessment","reorder_assessment","delete_assessment","delete_any_assessment","force_delete_assessment","force_delete_any_assessment"]}]';
+        $rolesWithPermissions = '[{"name":"lecturer","guard_name":"web","permissions":["view_assessment","view_any_assessment","create_assessment","update_assessment","restore_assessment","restore_any_assessment","replicate_assessment","reorder_assessment","delete_assessment","delete_any_assessment","force_delete_assessment","force_delete_any_assessment"]},{"name":"super_admin","guard_name":"web","permissions":["view_assessment","view_any_assessment","create_assessment","update_assessment","restore_assessment","restore_any_assessment","replicate_assessment","reorder_assessment","delete_assessment","delete_any_assessment","force_delete_assessment","force_delete_any_assessment","view_class::room","view_any_class::room","create_class::room","update_class::room","restore_class::room","restore_any_class::room","replicate_class::room","reorder_class::room","delete_class::room","delete_any_class::room","force_delete_class::room","force_delete_any_class::room","view_role","view_any_role","create_role","update_role","delete_role","delete_any_role","view_student","view_any_student","create_student","update_student","restore_student","restore_any_student","replicate_student","reorder_student","delete_student","delete_any_student","force_delete_student","force_delete_any_student","view_user","view_any_user","create_user","update_user","restore_user","restore_any_user","replicate_user","reorder_user","delete_user","delete_any_user","force_delete_user","force_delete_any_user"]}]';
         $directPermissions = '[]';
 
         static::makeRolesWithPermissions($rolesWithPermissions);
@@ -23,7 +23,7 @@ class ShieldSeeder extends Seeder
 
     protected static function makeRolesWithPermissions(string $rolesWithPermissions): void
     {
-        if (! blank($rolePlusPermissions = json_decode($rolesWithPermissions, true))) {
+        if (!blank($rolePlusPermissions = json_decode($rolesWithPermissions, true))) {
             /** @var Model $roleModel */
             $roleModel = Utils::getRoleModel();
             /** @var Model $permissionModel */
@@ -35,9 +35,9 @@ class ShieldSeeder extends Seeder
                     'guard_name' => $rolePlusPermission['guard_name'],
                 ]);
 
-                if (! blank($rolePlusPermission['permissions'])) {
+                if (!blank($rolePlusPermission['permissions'])) {
                     $permissionModels = collect($rolePlusPermission['permissions'])
-                        ->map(fn ($permission) => $permissionModel::firstOrCreate([
+                        ->map(fn($permission) => $permissionModel::firstOrCreate([
                             'name' => $permission,
                             'guard_name' => $rolePlusPermission['guard_name'],
                         ]))
@@ -51,7 +51,7 @@ class ShieldSeeder extends Seeder
 
     public static function makeDirectPermissions(string $directPermissions): void
     {
-        if (! blank($permissions = json_decode($directPermissions, true))) {
+        if (!blank($permissions = json_decode($directPermissions, true))) {
             /** @var Model $permissionModel */
             $permissionModel = Utils::getPermissionModel();
 

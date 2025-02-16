@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            ShieldSeeder::class,
             ClassRoomSeeder::class,
-            ShieldSeeder::class
         ]);
 
         $admin = User::factory()->create([
@@ -45,12 +45,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'penguji2@gmail.com',
         ]);
 
-        $dosen1->assignRole('dosen');
-        $dosen2->assignRole('dosen');
-        $dosen3->assignRole('dosen');
-        $dosen4->assignRole('dosen');
+        $dosen1->assignRole('lecturer');
+        $dosen2->assignRole('lecturer');
+        $dosen3->assignRole('lecturer');
+        $dosen4->assignRole('lecturer');
 
-        Artisan::call('shield:super-admin', ['--user' => $admin->getKey(), '--tenant' => Room::first()->id]);
+        Artisan::call('shield:super-admin', ['--user' => $admin->getKey(), '--tenant' => Room::first()->getKey()]);
         Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);
 
         Room::get()->each(function (Room $classRoom) use ($admin, $dosen1, $dosen2, $dosen3, $dosen4) {
