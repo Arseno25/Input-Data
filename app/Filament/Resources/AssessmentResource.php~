@@ -127,10 +127,6 @@ class AssessmentResource extends Resource
                     ->label('Class')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('assessment_stage')
-                    ->label('Assessment Stage')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('assessment')
                     ->label('Assessment')
                     ->searchable()

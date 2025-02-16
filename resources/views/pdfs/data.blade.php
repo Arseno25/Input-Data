@@ -19,14 +19,19 @@
         }
 
         th {
-            text-align: center; /* Center the text in the header */
-            background-color: #4CAF50; /* Green background color */
-            color: black; /* Black text color */
+            text-align: center;
+            background-color: #4CAF50;
+            color: black;
+        }
+
+        h1 {
+            text-align: center;
+            padding-bottom: 30px;
         }
     </style>
 </head>
 <body>
-<h1>Data Mahasiswa</h1>
+<h1>Data Nilai Mahasiswa</h1>
 <table>
     <thead>
     <tr>
@@ -34,6 +39,7 @@
         <th>Nama</th>
         <th>NIM</th>
         <th>Kelas</th>
+        <th>Tahap Penilaian</th>
         <th>Nilai</th>
     </tr>
     </thead>
@@ -44,6 +50,7 @@
             <td>{{ $record->student->name }}</td>
             <td>{{ $record->student->nim }}</td>
             <td>{{ $record->room->name }}</td>
+            <td>{{ $record->assessment_stage }}</td>
             <td>{{ is_array($record->assessment) ? implode(', ', $record->assessment) : $record->assessment }}</td>
         </tr>
     @endforeach
