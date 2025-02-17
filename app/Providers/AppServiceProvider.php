@@ -32,7 +32,11 @@ class AppServiceProvider extends ServiceProvider
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
                 ->locales(['id','en'])
-                ->circular();
+                ->circular()
+                ->flags([
+                    'en' => asset('assets/flags/us.svg'),
+                    'id' => asset('assets/flags/id.svg'),
+                ]);
         });
     }
 }

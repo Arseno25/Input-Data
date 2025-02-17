@@ -8,6 +8,7 @@ export default {
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
+        './vendor/andreia/filament-nord-theme/resources/css/theme.css',
     ],
     theme: {
         extend: {
