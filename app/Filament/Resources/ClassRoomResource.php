@@ -24,12 +24,6 @@ class ClassRoomResource extends Resource
 
     protected static ?string $navigationGroup = 'Data Management';
 
-    protected static ?string $navigationLabel = 'Class Room';
-
-    protected static ?string $pluralLabel = 'Class Rooms';
-
-    protected static ?string $label = 'Class Room';
-
     protected static ?int $navigationSort = -12;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
@@ -41,10 +35,26 @@ class ClassRoomResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Name')
+                    ->label(function(){
+                        $locale = app()->getLocale();
+
+                        if ($locale == 'id') {
+                            return 'Nama';
+                        }
+
+                        return 'Name';
+                    })
                     ->required(),
                 Forms\Components\Select::make('lecturer_id')
-                    ->label('Lecturer')
+                    ->label(function(){
+                        $locale = app()->getLocale();
+
+                        if ($locale == 'id') {
+                            return 'Dosen';
+                        }
+
+                        return 'Lecturer';
+                    })
                     ->relationship('users', 'name')
                     ->multiple()
                     ->searchable()
@@ -58,10 +68,27 @@ class ClassRoomResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(function(){
+                        $locale = app()->getLocale();
+
+                        if ($locale == 'id') {
+                            return 'Nama';
+                        }
+
+                        return 'Name';
+                    })
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('users.name')
-                    ->label('Lecturer')
+                    ->label(function(){
+                        $locale = app()->getLocale();
+
+                        if ($locale == 'id') {
+                            return 'Dosen';
+                        }
+
+                        return 'Lecturer';
+                    })
                     ->searchable()
                     ->badge()
                     ->color(Color::Blue)
@@ -143,5 +170,16 @@ class ClassRoomResource extends Resource
             'create' => Pages\CreateClassRoom::route('/create'),
             'edit' => Pages\EditClassRoom::route('/{record}/edit'),
         ];
+    }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+
+        if ($locale == 'id') {
+            return 'Kelas';
+        }
+
+        return 'Class Rooms';
     }
 }

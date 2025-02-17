@@ -25,12 +25,6 @@ class StudentResource extends Resource
 
     protected static ?string $navigationGroup = 'Data Management';
 
-    protected static ?string $navigationLabel = 'Student';
-
-    protected static ?string $pluralLabel = 'Students';
-
-    protected static ?string $label = 'Student';
-
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
     public static function form(Form $form): Form
@@ -145,5 +139,16 @@ class StudentResource extends Resource
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
         ];
+    }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+
+        if ($locale == 'id') {
+            return 'Mahasiswa';
+        }
+
+        return 'Students';
     }
 }

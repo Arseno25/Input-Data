@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use Filament\Facades\Filament;
 use App\Models\Permission;
 use App\Models\Role;
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +28,11 @@ class AppServiceProvider extends ServiceProvider
             ->setRoleClass(Role::class);
 
         Filament::getTenant();
+
+        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
+            $switch
+                ->locales(['id','en'])
+                ->circular();
+        });
     }
 }

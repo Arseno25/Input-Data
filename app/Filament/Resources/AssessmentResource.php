@@ -32,12 +32,6 @@ class AssessmentResource extends Resource
 
     protected static ?string $navigationGroup = 'Data Management';
 
-    protected static ?string $navigationLabel = 'Assessment';
-
-    protected static ?string $pluralLabel = 'Assessments';
-
-    protected static ?string $label = 'Assessment';
-
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
 
     public static function getEloquentQuery(): Builder
@@ -63,7 +57,14 @@ class AssessmentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('student_id')
-                            ->label('Student')
+                            ->label(function () {
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Mahasiswa';
+                                }
+                                return 'Student';
+                            })
                             ->searchable()
                             ->preload()
                             ->relationship('student', 'name', function (Builder $query) {
@@ -78,7 +79,14 @@ class AssessmentResource extends Resource
                                 }
                             }),
                         Forms\Components\Select::make('room_id')
-                            ->label('Class')
+                            ->label(function () {
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Kelas';
+                                }
+                                return 'Class';
+                            })
                             ->relationship('room', 'name')
                             ->placeholder(' ')
                             ->disabled()
@@ -91,14 +99,35 @@ class AssessmentResource extends Resource
                     ->columns(4)
                     ->schema([
                         Forms\Components\Select::make('assessment_stage')
-                            ->label('Assessment Stage')
+                            ->label(function () {
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Tahap';
+                                }
+                                return 'Stage';
+                            })
                             ->columnSpanFull()
-                            ->options([
-                                'Stage 1' => 'Stage 1',
-                                'Stage 2' => 'Stage 2',
-                                'Stage 3' => 'Stage 3',
-                                'Stage 4' => 'Stage 4',
-                            ])
+                            ->options(function(){
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return [
+                                        'tahap_1' => 'Tahap 1',
+                                        'tahap_2' => 'Tahap 2',
+                                        'tahap_3' => 'Tahap 3',
+                                        'tahap_4' => 'Tahap 4',
+                                    ];
+                                } else {
+                                    return [
+                                        'stage_1' => 'Stage 1',
+                                        'stage_2' => 'Stage 2',
+                                        'stage_3' => 'Stage 3',
+                                        'stage_4' => 'Stage 4',
+                                    ];
+                                }
+
+                            })
                             ->required(),
                         Forms\Components\KeyValue::make('assessment')
                             ->required()
@@ -196,5 +225,16 @@ class AssessmentResource extends Resource
             'create' => Pages\CreateAssessment::route('/create'),
             'edit' => Pages\EditAssessment::route('/{record}/edit'),
         ];
+    }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+
+        if ($locale == 'id') {
+            return 'Penilaian';
+        }
+
+        return 'Assesments';
     }
 }
