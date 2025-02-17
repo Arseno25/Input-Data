@@ -53,7 +53,14 @@ class AssessmentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Student Information')
+                Forms\Components\Section::make(function () {
+                            $locale = app()->getLocale();
+
+                            if ($locale == 'id') {
+                                return 'Informasi Mahasiswa';
+                            }
+                            return 'Student Information';
+                        })
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('student_id')
@@ -94,7 +101,14 @@ class AssessmentResource extends Resource
                         Forms\Components\Hidden::make('lecturer_id')
                             ->default(auth()->user()->getKey()),
                     ]),
-                Forms\Components\Section::make('Assessment Information')
+                Forms\Components\Section::make(function () {
+                    $locale = app()->getLocale();
+
+                    if ($locale == 'id') {
+                        return 'Informasi Penilaian';
+                    }
+                    return 'Assessment Information';
+                })
                     ->columnSpanFull()
                     ->columns(4)
                     ->schema([
@@ -130,11 +144,52 @@ class AssessmentResource extends Resource
                             })
                             ->required(),
                         Forms\Components\KeyValue::make('assessment')
+                            ->label(function () {
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Penilaian';
+                                }
+                                return 'Assessment';
+                            })
                             ->required()
-                            ->helperText(new HtmlString('Score Label is for the label of the score (e.g., Score 1), and Value is for the score itself (e.g., 100).'))
-                            ->valueLabel('Score')
-                            ->keyLabel('Score Label')
-                            ->addActionLabel('Add Score')
+                            ->helperText(function(){
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Label Nilai adalah untuk label nilai (misalnya, Nilai 1), dan Nilai adalah untuk nilai itu sendiri (misalnya, 100).';
+                                }
+
+                                return 'Score Label is for the label of the score (e.g., Score 1), and Value is for the score itself (e.g., 100).';
+                            })
+                            ->keyLabel(function(){
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Label Nilai';
+                                }
+
+                                return 'Score Label';
+                            })
+                            ->valueLabel(function(){
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Nilai';
+                                }
+
+                                return 'Score';
+                            })
+                            ->columnSpanFull()
+                            ->addActionLabel(function(){
+                                $locale = app()->getLocale();
+
+                                if ($locale == 'id') {
+                                    return 'Tambah Nilai';
+                                }
+
+                                return 'Add Score';
+                            })
                             ->columnSpanFull(),
                     ]),
             ]);
