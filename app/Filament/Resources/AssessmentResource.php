@@ -124,25 +124,12 @@ class AssessmentResource extends Resource
                                 return $locale = 'id' ? 'Tahap Penilaian' : 'Assessment Stage';
                             })
                             ->columnSpanFull()
-                            ->options(function () {
-                                $locale = app()->getLocale();
-
-                                if ($locale == 'id') {
-                                    return [
-                                        'Tahap 1' => 'Tahap 1',
-                                        'Tahap 2' => 'Tahap 2',
-                                        'Tahap 3' => 'Tahap 3',
-                                        'Tahap 4' => 'Tahap 4',
-                                    ];
-                                } else {
-                                    return [
-                                        'Stage 1' => 'Stage 1',
-                                        'Stage 2' => 'Stage 2',
-                                        'Stage 3' => 'Stage 3',
-                                        'Stage 4' => 'Stage 4',
-                                    ];
-                                }
-                            })
+                            ->options([
+                                'Penilaian Tahap 1' => 'Stage 1 Assessment (Penilaian Tahap 1)',
+                                'Penilaian Tahap 2' => 'Stage 1 Assessment (Penilaian Tahap 2)',
+                                'Penilaian Tahap 3' => 'Stage 1 Assessment (Penilaian Tahap 3)',
+                                'Penilaian Tahap 4' => 'Stage 1 Assessment (Penilaian Tahap 4)',
+                            ])
                             ->required(),
                         Forms\Components\KeyValue::make('assessment')
                             ->label(function () {
@@ -235,17 +222,15 @@ class AssessmentResource extends Resource
                     ->label('Export Excel')
                     ->icon('heroicon-o-document-arrow-up')
                     ->color('success')
-                    ->exporter(AssessmentExporter::class)
-                    ->formats([
-                        ExportFormat::Xlsx
-                    ]),
+                    ->exporter(AssessmentExporter::class),
                 Tables\Actions\Action::make('Export PDF')
                     ->label('Export PDF')
                     ->icon('heroicon-o-document-arrow-up')
                     ->color('danger')
                     ->action(function () {
-                        $records = Assessment::with(['student', 'room'])->get();
-                        $pdf = Pdf::loadView('pdfs.data', ['records' => $records]);
+                        $records = Assessment::with(['student'])->get();
+                        $pdf = Pdf::loadView('pdfs.data', ['records' => $records])
+                            ->setPaper('a4', 'landscape');
 
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->stream();
