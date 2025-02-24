@@ -10,11 +10,14 @@ class Student extends Model
     protected $fillable = [
         'name',
         'nim',
-        'room_id',
+        'title_of_the_final_project_proposal',
+        'design_theme',
+//        'room_id',
+
     ];
 
-    public function room(): BelongsTo
-    {
-        return $this->belongsTo(Room::class);
-    }
+//    public function room(): BelongsTo
+//    {
+//        return $this->belongsTo(Room::class);
+//    }
 }

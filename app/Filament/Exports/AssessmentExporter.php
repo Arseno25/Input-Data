@@ -21,7 +21,7 @@ class AssessmentExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return "assessment-{$export->getKey()}_" . Carbon::now()->format('Y-m-d H:i:s');
+        return "Assessment-{$export->getKey()}_" . Carbon::now()->format('Y-m-d H:i:s');
     }
 
     public static function getColumns(): array
@@ -29,9 +29,10 @@ class AssessmentExporter extends Exporter
         return [
             ExportColumn::make('student.name')->label('Nama Mahasiswa'),
             ExportColumn::make('student.nim')->label('NIM'),
-            ExportColumn::make('room.name')->label('Kelas'),
+            ExportColumn::make('student.title_of_the_final_project_proposal')->label('Judul Proposal Tugas Akhir '),
+            ExportColumn::make('student.design_theme')->label('Tema Rancangan'),
             ExportColumn::make('assessment_stage')->label('Tahap Penilaian'),
-            ExportColumn::make('assessment')->label('Penilaian')
+            ExportColumn::make('assessment')->label('Nilai')
         ];
     }
 

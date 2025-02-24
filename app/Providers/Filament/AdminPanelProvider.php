@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->tenant(Room::class, ownershipRelationship: 'users')
+//            ->tenant(Room::class, ownershipRelationship: 'users')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -37,6 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make(),
                 FilamentNordThemePlugin::make()
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
@@ -60,12 +61,9 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->tenantMiddleware([
-                \BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant::class,
-            ], isPersistent: true)
-            ->plugins([
-                FilamentShieldPlugin::make(),
-            ])
+//            ->tenantMiddleware([
+//                \BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant::class,
+//            ], isPersistent: true)
             ->authMiddleware([
                 Authenticate::class,
             ]);

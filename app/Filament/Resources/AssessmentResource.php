@@ -32,6 +32,8 @@ class AssessmentResource extends Resource
 
     protected static ?string $navigationGroup = 'Data Management';
 
+    protected static ?int $navigationSort = -4;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
 
     public static function getEloquentQuery(): Builder
@@ -54,50 +56,54 @@ class AssessmentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make(function () {
-                            $locale = app()->getLocale();
+                    $locale = app()->getLocale();
 
-                            if ($locale == 'id') {
-                                return 'Informasi Mahasiswa';
-                            }
-                            return 'Student Information';
-                        })
+                    if ($locale == 'id') {
+                        return 'Informasi Mahasiswa';
+                    }
+                    return 'Student Information';
+                })
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('student_id')
                             ->label(function () {
                                 $locale = app()->getLocale();
-
-                                if ($locale == 'id') {
-                                    return 'Mahasiswa';
-                                }
-                                return 'Student';
+                                return $locale == 'id' ? 'Mahasiswa' : 'Student';
                             })
                             ->searchable()
+                            ->relationship('student', 'name')
                             ->preload()
-                            ->relationship('student', 'name', function (Builder $query) {
-                                $query->where('room_id', Filament::getTenant()->getKey());
-                            })
                             ->required()
-                            ->reactive()
+                            ->live(onBlur: true)
+                            ->afterStateHydrated(function (callable $set, $state) {
+                                if ($state) {
+                                    $student = \App\Models\Student::find($state);
+                                    if ($student) {
+                                        $set('student.nim', $student->nim);
+                                        $set('student.title_of_the_final_project_proposal', $student->title_of_the_final_project_proposal);
+                                        $set('student.design_theme', $student->design_theme);
+                                    }
+                                }
+                            })
                             ->afterStateUpdated(function (callable $set, $state) {
-                                $student = \App\Models\Student::find($state);
-                                if ($student) {
-                                    $set('room_id', $student->room_id);
+                                if ($student = \App\Models\Student::find($state)) {
+                                    $set('student.nim', $student->nim);
+                                    $set('student.title_of_the_final_project_proposal', $student->title_of_the_final_project_proposal);
+                                    $set('student.design_theme', $student->design_theme);
                                 }
                             }),
-                        Forms\Components\Select::make('room_id')
-                            ->label(function () {
-                                $locale = app()->getLocale();
-
-                                if ($locale == 'id') {
-                                    return 'Kelas';
-                                }
-                                return 'Class';
-                            })
-                            ->relationship('room', 'name')
-                            ->placeholder(' ')
-                            ->disabled()
-                            ->required(),
+                        Forms\Components\TextInput::make('student.nim')
+                            ->label('NIM')
+                            ->required()
+                            ->disabled(),
+                        Forms\Components\TextInput::make('student.title_of_the_final_project_proposal')
+                            ->label('Title of the Final Project Proposal')
+                            ->required()
+                            ->disabled(),
+                        Forms\Components\TextInput::make('student.design_theme')
+                            ->label('Design Theme')
+                            ->required()
+                            ->disabled(),
                         Forms\Components\Hidden::make('lecturer_id')
                             ->default(auth()->user()->getKey()),
                     ]),
@@ -115,54 +121,43 @@ class AssessmentResource extends Resource
                         Forms\Components\Select::make('assessment_stage')
                             ->label(function () {
                                 $locale = app()->getLocale();
-
-                                if ($locale == 'id') {
-                                    return 'Tahap';
-                                }
-                                return 'Stage';
+                                return $locale = 'id' ? 'Tahap Penilaian' : 'Assessment Stage';
                             })
                             ->columnSpanFull()
-                            ->options(function(){
+                            ->options(function () {
                                 $locale = app()->getLocale();
 
                                 if ($locale == 'id') {
                                     return [
-                                        'tahap_1' => 'Tahap 1',
-                                        'tahap_2' => 'Tahap 2',
-                                        'tahap_3' => 'Tahap 3',
-                                        'tahap_4' => 'Tahap 4',
+                                        'Tahap 1' => 'Tahap 1',
+                                        'Tahap 2' => 'Tahap 2',
+                                        'Tahap 3' => 'Tahap 3',
+                                        'Tahap 4' => 'Tahap 4',
                                     ];
                                 } else {
                                     return [
-                                        'stage_1' => 'Stage 1',
-                                        'stage_2' => 'Stage 2',
-                                        'stage_3' => 'Stage 3',
-                                        'stage_4' => 'Stage 4',
+                                        'Stage 1' => 'Stage 1',
+                                        'Stage 2' => 'Stage 2',
+                                        'Stage 3' => 'Stage 3',
+                                        'Stage 4' => 'Stage 4',
                                     ];
                                 }
-
                             })
                             ->required(),
                         Forms\Components\KeyValue::make('assessment')
                             ->label(function () {
                                 $locale = app()->getLocale();
-
-                                if ($locale == 'id') {
-                                    return 'Penilaian';
-                                }
-                                return 'Assessment';
+                                return $locale == 'id' ? 'Penilaian' : 'Assessment';
                             })
                             ->required()
-                            ->helperText(function(){
+                            ->helperText(function () {
                                 $locale = app()->getLocale();
-
                                 if ($locale == 'id') {
                                     return 'Label Nilai adalah untuk label nilai (misalnya, Nilai 1), dan Nilai adalah untuk nilai itu sendiri (misalnya, 100).';
                                 }
-
                                 return 'Score Label is for the label of the score (e.g., Score 1), and Value is for the score itself (e.g., 100).';
                             })
-                            ->keyLabel(function(){
+                            ->keyLabel(function () {
                                 $locale = app()->getLocale();
 
                                 if ($locale == 'id') {
@@ -171,7 +166,7 @@ class AssessmentResource extends Resource
 
                                 return 'Score Label';
                             })
-                            ->valueLabel(function(){
+                            ->valueLabel(function () {
                                 $locale = app()->getLocale();
 
                                 if ($locale == 'id') {
@@ -181,7 +176,7 @@ class AssessmentResource extends Resource
                                 return 'Score';
                             })
                             ->columnSpanFull()
-                            ->addActionLabel(function(){
+                            ->addActionLabel(function () {
                                 $locale = app()->getLocale();
 
                                 if ($locale == 'id') {
@@ -207,8 +202,12 @@ class AssessmentResource extends Resource
                     ->label('NIM')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('room.name')
-                    ->label('Class')
+                Tables\Columns\TextColumn::make('student.title_of_the_final_project_proposal')
+                    ->label('Title of the Final Project Proposal')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('student.design_theme')
+                    ->label('Design Theme')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('assessment_stage')

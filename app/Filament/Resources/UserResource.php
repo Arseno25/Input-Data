@@ -25,6 +25,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'User Management';
 
+    protected static ?int $navigationSort = -3;
+
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static bool $isScopedToTenant = false;
@@ -34,24 +36,24 @@ class UserResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                ->label('Nama')
-                ->required(),
+                    ->label('Nama')
+                    ->required(),
                 TextInput::make('email')
-                ->label('Email')
-                ->email()
-                ->required(),
+                    ->label('Email')
+                    ->email()
+                    ->required(),
                 Select::make('roles')
-                ->label('Role')
-                ->preload()
-                ->relationship('roles', 'name')
-                ->required(),
+                    ->label('Role')
+                    ->preload()
+                    ->relationship('roles', 'name')
+                    ->required(),
                 Select::make('rooms')
-                ->label('Class')
-                ->preload()
-                ->multiple()
-                ->searchable()
-                ->relationship('rooms', 'name')
-                ->required(),
+                    ->label('Class')
+                    ->preload()
+                    ->multiple()
+                    ->searchable()
+                    ->relationship('rooms', 'name')
+                    ->required(),
             ]);
     }
 
@@ -62,7 +64,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('roles.name')
-                ->badge()
+                    ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'users' => 'warning',
                         'super_admin' => 'danger',

@@ -16,7 +16,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasTenants, FilamentUser
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -55,20 +55,20 @@ class User extends Authenticatable implements HasTenants, FilamentUser
         ];
     }
 
-    public function rooms(): BelongsToMany
-    {
-        return $this->belongsToMany(Room::class);
-    }
-
-    public function getTenants(Panel $panel): Collection
-    {
-        return $this->rooms;
-    }
-
-    public function canAccessTenant(Model $tenant): bool
-    {
-        return $this->rooms()->whereKey($tenant)->exists();
-    }
+//    public function rooms(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Room::class);
+//    }
+//
+//    public function getTenants(Panel $panel): Collection
+//    {
+//        return $this->rooms;
+//    }
+//
+//    public function canAccessTenant(Model $tenant): bool
+//    {
+//        return $this->rooms()->whereKey($tenant)->exists();
+//    }
 
     public function canAccessPanel(Panel $panel): bool
     {

@@ -9,7 +9,7 @@ class Assessment extends Model
 {
     protected $fillable = [
         'student_id',
-        'room_id',
+//        'room_id',
         'lecturer_id',
         'assessment_stage',
         'assessment',
@@ -19,10 +19,10 @@ class Assessment extends Model
         'assessment' => 'array',
     ];
 
-    public function room(): BelongsTo
-    {
-        return $this->belongsTo(Room::class);
-    }
+//    public function room(): BelongsTo
+//    {
+//        return $this->belongsTo(Room::class);
+//    }
 
     public function student(): BelongsTo
     {

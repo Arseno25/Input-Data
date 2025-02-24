@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->nullable()->constrained('students');
-            $table->foreignId('room_id')->nullable()->constrained('rooms')->onDelete('cascade');
+//            $table->foreignId('room_id')->nullable()->constrained('rooms')->onDelete('cascade');
             $table->string('assessment_stage')->nullable();
             $table->json('assessment')->nullable();
             $table->timestamps();

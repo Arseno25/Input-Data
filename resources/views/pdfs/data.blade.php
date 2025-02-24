@@ -38,7 +38,8 @@
         <th>No</th>
         <th>Nama</th>
         <th>NIM</th>
-        <th>Kelas</th>
+        <th>Judul Proposal Tugas Akhir</th>
+        <th>Tema Rancangan</th>
         <th>Tahap Penilaian</th>
         <th>Nilai</th>
     </tr>
@@ -49,7 +50,8 @@
             <td>{{ $index + 1 }}</td>
             <td>{{ $record->student->name }}</td>
             <td>{{ $record->student->nim }}</td>
-            <td>{{ $record->room->name }}</td>
+            <td>{{ $record->student->title_of_the_final_project_proposal }}</td>
+            <td>{{ $record->student->design_theme }}</td>
             <td>{{ $record->assessment_stage }}</td>
             <td>{{ is_array($record->assessment) ? implode(', ', $record->assessment) : $record->assessment }}</td>
         </tr>

@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ShieldSeeder::class,
-            ClassRoomSeeder::class,
         ]);
 
         $admin = User::factory()->create([
@@ -50,11 +49,11 @@ class DatabaseSeeder extends Seeder
         $dosen3->assignRole('lecturer');
         $dosen4->assignRole('lecturer');
 
-        Artisan::call('shield:super-admin', ['--user' => $admin->getKey(), '--tenant' => Room::first()->getKey()]);
+        Artisan::call('shield:super-admin', ['--user' => $admin->getKey()]);
         Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);
 
-        Room::get()->each(function (Room $classRoom) use ($admin, $dosen1, $dosen2, $dosen3, $dosen4) {
-            $classRoom->users()->attach([$admin->getKey(), $dosen1->getKey(), $dosen2->getKey(), $dosen3->getKey(), $dosen4->getKey()]);
-        });
+//        Room::get()->each(function (Room $classRoom) use ($admin, $dosen1, $dosen2, $dosen3, $dosen4) {
+//            $classRoom->users()->attach([$admin->getKey(), $dosen1->getKey(), $dosen2->getKey(), $dosen3->getKey(), $dosen4->getKey()]);
+//        });
     }
 }

@@ -23,15 +23,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        app(\Spatie\Permission\PermissionRegistrar::class)
-            ->setPermissionClass(Permission::class)
-            ->setRoleClass(Role::class);
-
-        Filament::getTenant();
+//        app(\Spatie\Permission\PermissionRegistrar::class)
+//            ->setPermissionClass(Permission::class)
+//            ->setRoleClass(Role::class);
+//
+//        Filament::getTenant();
 
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
-                ->locales(['id','en'])
+                ->locales(['id', 'en'])
                 ->circular()
                 ->flags([
                     'en' => asset('assets/flags/us.svg'),

@@ -25,6 +25,8 @@ class StudentResource extends Resource
 
     protected static ?string $navigationGroup = 'Data Management';
 
+    protected static ?int $navigationSort = -5;
+
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
     public static function form(Form $form): Form
@@ -38,11 +40,11 @@ class StudentResource extends Resource
                     ->label('NIM')
                     ->required()
                     ->numeric(),
-                Forms\Components\Select::make('room_id')
-                    ->label('Class')
-                    ->searchable()
-                    ->preload()
-                   ->relationship('room', 'name')
+                Forms\Components\TextInput::make('title_of_the_final_project_proposal')
+                    ->label('Title of the Final Project Proposal')
+                    ->required(),
+                Forms\Components\TextInput::make('design_theme')
+                    ->label('Design Theme')
                     ->required(),
             ]);
     }
@@ -57,8 +59,10 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('nim')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('room.name')
-                    ->label('Class')
+                Tables\Columns\TextColumn::make('title_of_the_final_project_proposal')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('design_theme')
                     ->searchable()
                     ->sortable(),
             ])
@@ -105,18 +109,19 @@ class StudentResource extends Resource
                         $path = Storage::disk('local')->path($file);
 
                         SimpleExcelReader::create($path)
-                            ->useHeaders(['Name', 'Nim', 'Room ID'])
+                            ->useHeaders(['NAMA', 'NIM', 'JUDUL PROPOSAL TUGAS AKHIR', 'TEMA RANCANGAN'])
                             ->getRows()
-                            ->each(function(array $rowProperties) {
+                            ->each(function (array $rowProperties) {
                                 Student::updateOrCreate(
-                                    ['nim' => $rowProperties['Nim']],
+                                    ['nim' => $rowProperties['NIM']],
                                     [
-                                        'name' => $rowProperties['Name'],
-                                        'room_id' => $rowProperties['Room ID'] !== '' ? $rowProperties['Room ID'] : null,
+                                        'name' => $rowProperties['NAMA'],
+                                        'title_of_the_final_project_proposal' => $rowProperties['JUDUL PROPOSAL TUGAS AKHIR'],
+                                        'design_theme' => $rowProperties['TEMA RANCANGAN'],
                                     ]
                                 );
                             });
-                }),
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
