@@ -40,7 +40,7 @@ class AssessmentExporter extends Exporter
         return (new Style())
             ->setFontBold()
             ->setFontSize(14)
-            ->setShouldWrapText()
+            ->setShouldShrinkToFit(false)
             ->setFontName('Times New Roman')
             ->setFontColor(Color::rgb(255, 255, 255))
             ->setBackgroundColor(Color::rgb(0, 0, 0))
