@@ -39,10 +39,10 @@ class AssessmentExporter extends Exporter
     {
         return (new Style())
             ->setFontBold()
-            ->setFontItalic()
             ->setFontSize(14)
+            ->setShouldWrapText()
             ->setFontName('Times New Roman')
-            ->setFontColor(Color::rgb(255, 255, 77))
+            ->setFontColor(Color::rgb(255, 255, 255))
             ->setBackgroundColor(Color::rgb(0, 0, 0))
             ->setCellAlignment(CellAlignment::CENTER)
             ->setCellVerticalAlignment(CellVerticalAlignment::CENTER);
