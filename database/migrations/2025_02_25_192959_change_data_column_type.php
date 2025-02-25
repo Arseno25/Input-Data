@@ -12,9 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         if (Config::get('database.default') === 'pgsql') {
-            Schema::table('notifications', function (Blueprint $table) {
-                $table->jsonb('data')->change();
-            });
+            // Ubah tipe kolom dengan konversi menggunakan "USING data::jsonb"
+            DB::statement('ALTER TABLE notifications ALTER COLUMN data TYPE jsonb USING data::jsonb');
         }
     }
 
@@ -24,9 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         if (Config::get('database.default') === 'pgsql') {
-            Schema::table('notifications', function (Blueprint $table) {
-                $table->text('data')->change();
-            });
+            // Ubah kembali ke text jika diperlukan
+            DB::statement('ALTER TABLE notifications ALTER COLUMN data TYPE text USING data::text');
         }
     }
 };
