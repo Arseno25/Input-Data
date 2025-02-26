@@ -233,8 +233,8 @@ class AssessmentResource extends Resource
                         GeneratePdfJob::dispatch($user);
 
                         Notification::make()
-                            ->title('Proses Export Berjalan')
-                            ->body('PDF sedang diproses. Anda akan menerima notifikasi setelah selesai.')
+                            ->title('Export Process in Progress')
+                            ->body('The PDF is being processed. You will receive a notification when it is finished.')
                             ->success()
                             ->send();
                     }),

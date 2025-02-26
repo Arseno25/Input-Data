@@ -51,7 +51,7 @@ class GeneratePdfJob implements ShouldQueue
                         ->label('download .pdf')
                         ->color('success')
                         ->markAsRead()
-                        ->url(asset("storage/{$filename}"), true),
+                        ->url(route('download.pdf', ['filename' => $filename]), true),
                 ])
                 ->icon('heroicon-o-paper-clip')
                 ->success()
