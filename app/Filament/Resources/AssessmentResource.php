@@ -2,27 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Exports\AssessmentExporter;
-use App\Filament\Resources\AssessmentResource\Pages;
-use App\Filament\Resources\AssessmentResource\RelationManagers;
-use App\Models\Assessment;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use Filament\Actions\Exports\Enums\ExportFormat;
-use Filament\Facades\Filament;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Assessment;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use App\Jobs\GeneratePdfJob;
+use Filament\Facades\Filament;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
+use Filament\Notifications\Notification;
 use pxlrbt\FilamentExcel\Columns\Column;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Exports\AssessmentExporter;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Filament\Actions\Exports\Enums\ExportFormat;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\AssessmentResource\Pages;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use App\Filament\Resources\AssessmentResource\RelationManagers;
 
 class AssessmentResource extends Resource
 {
@@ -228,19 +229,14 @@ class AssessmentResource extends Resource
                     ->icon('heroicon-o-document-arrow-up')
                     ->color('danger')
                     ->action(function () {
-                        $records = Assessment::with(['student'])->get();
-                        $pdf = Pdf::loadView('pdfs.data', ['records' => $records])
-                            ->setPaper('a4', 'landscape');
+                        $user = auth()->user();
+                        GeneratePdfJob::dispatch($user);
 
-                        return response()->streamDownload(function () use ($pdf) {
-                            echo $pdf->stream();
-                            Notification::make()
-                                ->title('Export PDF')
-                                ->body('Berhasil mengexport ' . 'data-' . Carbon::now()->format('Y-m-d H:m:s') . '.pdf')
-                                ->success()
-                                ->icon('heroicon-o-check-circle')
-                                ->send();
-                        }, 'data-' . Carbon::now()->format('Y-m-d') . '.pdf');
+                        Notification::make()
+                            ->title('Proses Export Berjalan')
+                            ->body('PDF sedang diproses. Anda akan menerima notifikasi setelah selesai.')
+                            ->success()
+                            ->send();
                     }),
             ])
             ->bulkActions([

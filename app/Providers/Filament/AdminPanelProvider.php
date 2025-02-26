@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('Student Assesment')
+            ->brandName('Student Assessment')
             //            ->tenant(Room::class, ownershipRelationship: 'users')
             ->login()
             ->colors([
