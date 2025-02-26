@@ -227,6 +227,7 @@ class AssessmentResource extends Resource
                     ->color('danger')
                     ->action(function () {
                         $user = auth()->user();
+
                         GeneratePdfJob::dispatch($user);
 
                         Notification::make()

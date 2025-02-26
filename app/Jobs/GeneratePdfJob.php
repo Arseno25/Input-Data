@@ -44,6 +44,18 @@ class GeneratePdfJob implements ShouldQueue
 
         $basename = basename($filename);
 
+        if ($records->isEmpty()) {
+            $this->user->notify(
+                Notification::make()
+                    ->title('No Data Available')
+                    ->body('There is no data available to export at this time.')
+                    ->icon('heroicon-o-exclamation-circle')
+                    ->warning()
+                    ->toDatabase()
+            );
+            return;
+        }
+
         $this->user->notify(
             Notification::make()
                 ->title('PDF Report Ready')
