@@ -11,14 +11,12 @@ Route::get('/', function () {
 });
 
 Route::get('/download-pdf/{filename}', function ($filename) {
-    $path = storage_path("app/public/exports/{$filename}");
+    $filename = urldecode(basename($filename));
+    $filePath = storage_path("app/public/exports/{$filename}");
 
-    if (!file_exists($path)) {
+    if (!file_exists($filePath)) {
         abort(404, 'File not found');
     }
 
-    return Response::download($path, $filename, [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'attachment; filename="' . $filename . '"'
-    ]);
+    return response()->download($filePath);
 })->name('download.pdf');

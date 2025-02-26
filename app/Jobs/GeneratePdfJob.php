@@ -42,6 +42,8 @@ class GeneratePdfJob implements ShouldQueue
 
         Storage::disk('public')->put($filename, $pdf->output());
 
+        $basename = basename($filename);
+
         $this->user->notify(
             Notification::make()
                 ->title('PDF Report Ready')
@@ -51,7 +53,7 @@ class GeneratePdfJob implements ShouldQueue
                         ->label('download .pdf')
                         ->color('success')
                         ->markAsRead()
-                        ->url(route('download.pdf', ['filename' => $filename]), true),
+                        ->url(route('download.pdf', ['filename' => $basename])),
                 ])
                 ->icon('heroicon-o-paper-clip')
                 ->success()
