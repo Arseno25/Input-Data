@@ -46,10 +46,7 @@ class AssessmentResource extends Resource
         }
 
         return $query
-            ->where('lecturer_id', auth()->id())
-            ->whereHas('student', function (Builder $query) {
-                $query->where('room_id', Filament::getTenant()->getKey());
-            });
+            ->where('lecturer_id', auth()->id());
     }
 
     public static function form(Form $form): Form
