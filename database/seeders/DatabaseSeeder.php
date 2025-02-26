@@ -6,8 +6,9 @@ use App\Models\Room;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
-use Database\Seeders\ClassRoomSeeder;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\App;
+use Database\Seeders\ClassRoomSeeder;
 use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
@@ -51,6 +52,16 @@ class DatabaseSeeder extends Seeder
 
         Artisan::call('shield:super-admin', ['--user' => $admin->getKey()]);
         Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);
+
+
+        if (App::environment('demo')) {
+            $demoUser = User::factory()->create([
+                'name' => 'Demo User',
+                'email' => 'demo@example.com',
+            ]);
+            Artisan::call('shield:super-admin', ['--user' => $demoUser->getKey()]);
+            Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);
+        }
 
 //        Room::get()->each(function (Room $classRoom) use ($admin, $dosen1, $dosen2, $dosen3, $dosen4) {
 //            $classRoom->users()->attach([$admin->getKey(), $dosen1->getKey(), $dosen2->getKey(), $dosen3->getKey(), $dosen4->getKey()]);
