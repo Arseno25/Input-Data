@@ -59,8 +59,9 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Demo User',
                 'email' => 'demo@example.com',
             ]);
-            Artisan::call('shield:super-admin', ['--user' => $demoUser->getKey()]);
+
             Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);
+            $demoUser->assignRole('demo');
         }
 
 //        Room::get()->each(function (Room $classRoom) use ($admin, $dosen1, $dosen2, $dosen3, $dosen4) {
