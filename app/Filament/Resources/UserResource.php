@@ -31,6 +31,22 @@ class UserResource extends Resource
 
     protected static bool $isScopedToTenant = false;
 
+    public static function getEloquentQuery(): Builder
+{
+    $query = parent::getEloquentQuery();
+
+    if (auth()->user()->hasRole('demo')) {
+        if (app()->environment('demo')) {
+            return $query->whereHas('roles', function ($q) {
+                $q->where('name', 'demo');
+            });
+        }
+        return $query;
+    }
+
+    return $query->withoutGlobalScope(SoftDeletingScope::class);
+}
+
     public static function form(Form $form): Form
     {
         return $form
@@ -45,14 +61,11 @@ class UserResource extends Resource
                 Select::make('roles')
                     ->label('Role')
                     ->preload()
-                    ->relationship('roles', 'name')
-                    ->required(),
-                Select::make('rooms')
-                    ->label('Class')
-                    ->preload()
-                    ->multiple()
-                    ->searchable()
-                    ->relationship('rooms', 'name')
+                    ->relationship('roles', 'name', function ($query) {
+                        if (app()->environment('demo')) {
+                            $query->where('name', 'demo');
+                        }
+                    })
                     ->required(),
             ]);
     }
@@ -70,13 +83,6 @@ class UserResource extends Resource
                         'super_admin' => 'danger',
                         default => 'success',
                     }),
-                Tables\Columns\TextColumn::make('rooms.name')
-                    ->label('Class')
-                    ->searchable()
-                    ->badge()
-                    ->color(Color::Violet)
-                    ->limitList(3)
-                    ->sortable(),
             ])
             ->filters([
                 //
