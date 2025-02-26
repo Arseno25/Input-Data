@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('Student Assessment')
+            ->brandName(fn () => app()->environment('demo') ? 'Demo Assessment System' : 'Assessment System')
             //            ->tenant(Room::class, ownershipRelationship: 'users')
             ->login(Login::class)
             ->colors([
