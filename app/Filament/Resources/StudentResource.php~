@@ -169,6 +169,9 @@ class StudentResource extends Resource
                     <div class="inline-block w-2 h-2 mr-2 rounded-full bg-primary-500"></div>Download <a class="text-primary-500" target="_blank" href="/student-template.xlsx">this template in XLSX</a>.
                 </div>
                 <div class="text-sm text-opacity-80">
+                    <div class="inline-block w-2 h-2 mr-2 rounded-full bg-primary-500"></div>Fill list of refs.
+                </div>
+                <div class="text-sm text-opacity-80">
                     <div class="inline-block w-2 h-2 mr-2 rounded-full bg-primary-500"></div>Save the template in .xlsx format.
                 </div>
                 <div class="text-sm text-opacity-80">
