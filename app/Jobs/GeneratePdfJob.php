@@ -49,8 +49,8 @@ class GeneratePdfJob implements ShouldQueue
                 Notification::make()
                     ->title('No Data Available')
                     ->body('There is no data available to export at this time.')
-                    ->icon('heroicon-o-exclamation-circle')
-                    ->warning()
+                    ->icon('heroicon-o-x-circle')
+                    ->danger()
                     ->toDatabase()
             );
             return;
