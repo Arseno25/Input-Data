@@ -164,11 +164,7 @@ class AssessmentResource extends Resource
                             ->addActionLabel(function () {
                                 $locale = app()->getLocale();
 
-                                if ($locale == 'id') {
-                                    return 'Tambah Nilai';
-                                }
-
-                                return 'Add Score';
+                                return $locale == 'id' ? 'Tambah Nilai' : 'Add Score';
                             })
                             ->columnSpanFull(),
                     ]),
