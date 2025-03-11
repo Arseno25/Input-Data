@@ -157,6 +157,8 @@ class StudentResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\BulkAction::make('assign_group')
                         ->label('Assign Group')
+                        ->modal()
+                        ->modalWidth('sm')
                         ->icon('heroicon-o-user-group')
                         ->form([
                             Forms\Components\Select::make('group_id')
