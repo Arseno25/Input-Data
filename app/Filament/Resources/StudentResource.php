@@ -87,6 +87,9 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('design_theme')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('group.name')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -133,7 +136,7 @@ class StudentResource extends Resource
                         $path = Storage::disk('local')->path($file);
 
                         SimpleExcelReader::create($path)
-                            ->useHeaders(['NAMA', 'NIM', 'JUDUL PROPOSAL TUGAS AKHIR', 'TEMA RANCANGAN'])
+                            ->useHeaders(['NAMA', 'NIM', 'JUDUL PROPOSAL TUGAS AKHIR', 'TEMA RANCANGAN', 'KELOMPOK'])
                             ->getRows()
                             ->each(function (array $rowProperties) {
                                 Student::updateOrCreate(
@@ -142,6 +145,7 @@ class StudentResource extends Resource
                                         'name' => $rowProperties['NAMA'],
                                         'title_of_the_final_project_proposal' => $rowProperties['JUDUL PROPOSAL TUGAS AKHIR'],
                                         'design_theme' => $rowProperties['TEMA RANCANGAN'],
+                                        'group_id' => \App\Models\Group::firstOrCreate(['name' => $rowProperties['KELOMPOK']])->id,
                                     ]
                                 );
                             });

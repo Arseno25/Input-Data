@@ -62,7 +62,7 @@ class GeneratePdfJob implements ShouldQueue
                 ->body('The PDF report has been successfully generated. Click the button below to download it.')
                 ->actions([
                     \Filament\Notifications\Actions\Action::make('Download PDF')
-                        ->label('download .pdf')
+                        ->label('Download .pdf')
                         ->color('success')
                         ->markAsRead()
                         ->url(route('download.pdf', ['filename' => $basename])),

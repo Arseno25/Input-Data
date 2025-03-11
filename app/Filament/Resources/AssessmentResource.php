@@ -200,6 +200,10 @@ class AssessmentResource extends Resource
                     ->label('Design Theme')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('student.group.name')
+                    ->label('Group')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('assessment_stage')
                     ->label('Assessment Stage')
                     ->searchable()

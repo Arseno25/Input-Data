@@ -40,6 +40,7 @@
         <th>NIM</th>
         <th>Judul Proposal Tugas Akhir</th>
         <th>Tema Rancangan</th>
+        <th>Kelompok</th>
         <th>Tahap Penilaian</th>
         <th>Nilai</th>
     </tr>
@@ -52,8 +53,11 @@
             <td>{{ $record->student->nim }}</td>
             <td>{{ $record->student->title_of_the_final_project_proposal }}</td>
             <td>{{ $record->student->design_theme }}</td>
+            <td>{{ $record->student->group->name }}</td>
             <td>{{ $record->assessment_stage }}</td>
             <td>{{ is_array($record->assessment) ? implode(', ', $record->assessment) : $record->assessment }}</td>
+
+
         </tr>
     @endforeach
     </tbody>

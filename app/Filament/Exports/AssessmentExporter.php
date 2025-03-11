@@ -57,10 +57,12 @@ class AssessmentExporter extends Exporter
     public static function getColumns(): array
     {
         return [
+
             ExportColumn::make('student.name')->label('Nama Mahasiswa'),
             ExportColumn::make('student.nim')->label('NIM'),
             ExportColumn::make('student.title_of_the_final_project_proposal')->label('Judul Proposal Tugas Akhir '),
             ExportColumn::make('student.design_theme')->label('Tema Rancangan'),
+            ExportColumn::make('student.group.name')->label('Kelompok'),
             ExportColumn::make('assessment_stage')->label('Tahap Penilaian'),
             ExportColumn::make('assessment')->label('Nilai')
         ];
