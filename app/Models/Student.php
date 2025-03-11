@@ -12,12 +12,13 @@ class Student extends Model
         'nim',
         'title_of_the_final_project_proposal',
         'design_theme',
+        'group_id',
 //        'room_id',
 
     ];
 
-//    public function room(): BelongsTo
-//    {
-//        return $this->belongsTo(Room::class);
-//    }
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
+    }
 }

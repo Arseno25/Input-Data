@@ -63,27 +63,32 @@ class AssessmentResource extends Resource
                 })
                     ->columns(2)
                     ->schema([
+                        Forms\Components\Select::make('group_id')
+                            ->label(function () {
+                                return app()->getLocale() == 'id' ? 'Kelompok' : 'Group';
+                            })
+                            ->relationship('group', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->live(),
+
                         Forms\Components\Select::make('student_id')
                             ->label(function () {
-                                $locale = app()->getLocale();
-                                return $locale == 'id' ? 'Mahasiswa' : 'Student';
+                                return app()->getLocale() == 'id' ? 'Mahasiswa' : 'Student';
+                            })
+                            ->options(function (Forms\Get $get) {
+                                $groupId = $get('group_id');
+                                if (!$groupId) return [];
+
+                                return \App\Models\Student::query()
+                                    ->where('group_id', $groupId)
+                                    ->pluck('name', 'id');
                             })
                             ->searchable()
-                            ->relationship('student', 'name')
                             ->preload()
                             ->required()
-                            ->live(onBlur: true)
-                            ->afterStateHydrated(function (callable $set, $state) {
-                                if ($state) {
-                                    $student = \App\Models\Student::find($state);
-                                    if ($student) {
-                                        $set('student.nim', $student->nim);
-                                        $set('student.title_of_the_final_project_proposal', $student->title_of_the_final_project_proposal);
-                                        $set('student.design_theme', $student->design_theme);
-                                    }
-                                }
-                            })
-                            ->afterStateUpdated(function (callable $set, $state) {
+                            ->live()
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
                                 if ($student = \App\Models\Student::find($state)) {
                                     $set('student.nim', $student->nim);
                                     $set('student.title_of_the_final_project_proposal', $student->title_of_the_final_project_proposal);

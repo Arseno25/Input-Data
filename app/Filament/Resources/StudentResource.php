@@ -47,6 +47,27 @@ class StudentResource extends Resource
                 Forms\Components\TextInput::make('design_theme')
                     ->label('Design Theme')
                     ->required(),
+                Forms\Components\Select::make('group_id')
+                    ->relationship('group', 'name')
+                    ->label('Group')
+                    ->searchable()
+                    ->preload()
+                    ->suffixAction(
+                        Forms\Components\Actions\Action::make('create_group')
+                            ->icon('heroicon-m-plus')
+                            ->tooltip('Create Group')
+                            ->modalWidth('sm')
+                            ->modalHeading('Create Group')
+                            ->form([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->action(function (array $data, Forms\Components\Select $component) {
+                                $group = \App\Models\Group::create($data);
+                                $component->state($group->id);
+                            })
+                    ),
             ]);
     }
 
