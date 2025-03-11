@@ -237,13 +237,20 @@ class AssessmentResource extends Resource
                     ->action(function () {
                         $user = auth()->user();
 
-                        GeneratePdfJob::dispatch($user);
+                        try {
+                            \Log::info('Dispatching PDF job', ['user_id' => $user->id]);
+                            $job = new GeneratePdfJob($user);
+                            dispatch($job);
 
-                        Notification::make()
-                            ->title('Export Process in Progress')
-                            ->body('The PDF is being processed. You will receive a notification when it is finished.')
-                            ->success()
-                            ->send();
+                            Notification::make()
+                                ->title('Export Process in Progress')
+                                ->body('The PDF is being processed. You will receive a notification when it is finished.')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            \Log::error('PDF job error', ['error' => $e->getMessage()]);
+                            throw $e;
+                        }
                     }),
             ])
             ->bulkActions([

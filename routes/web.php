@@ -11,12 +11,13 @@ Route::get('/', function () {
 
 Route::get('/download-pdf/{filename}', function ($filename) {
     $filename = urldecode(basename($filename));
+    $path = "exports/{$filename}";
 
-    // Check if file exists in public disk
-    if (!Storage::disk('public')->exists("exports/{$filename}")) {
+    if (!Storage::disk('public')->exists($path)) {
+        Log::error('PDF file not found', ['path' => $path]);
         abort(404, 'File not found');
     }
 
-    // Download using Storage facade
-    return Storage::disk('public')->download("exports/{$filename}");
+    Log::info('Downloading PDF', ['path' => $path]);
+    return Storage::disk('public')->download($path);
 })->name('download.pdf');

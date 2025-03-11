@@ -7,6 +7,7 @@ use App\Models\Assessment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Filament\Notifications\Notification;
@@ -20,56 +21,61 @@ class GeneratePdfJob implements ShouldQueue
 
     protected $user;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(User $user)
     {
         $this->user = $user;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        $records = Assessment::with(['student'])->get();
+        Log::info('Starting PDF generation');
 
-        $pdf = Pdf::loadView('pdfs.data', ['records' => $records])
-            ->setPaper('a4', 'landscape');
+        try {
+            $records = Assessment::with(['student'])->get();
+            Log::info('Records found:', ['count' => $records->count()]);
 
-        $filename = 'exports/assessment-data-' . Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
+            if ($records->isEmpty()) {
+                Log::info('No records found');
+                $this->user->notify(
+                    Notification::make()
+                        ->title('No Data Available')
+                        ->body('There is no data available to export at this time.')
+                        ->icon('heroicon-o-x-circle')
+                        ->danger()
+                        ->toDatabase()
+                );
+                return;
+            }
 
-        Storage::disk('public')->put($filename, $pdf->output());
+            $pdf = Pdf::loadView('pdfs.data', ['records' => $records])
+                ->setPaper('a4', 'landscape');
 
-        $basename = basename($filename);
+            $filename = 'exports/assessment-data-' . Carbon::now()->format('Y-m-d_H-i-s') . '.pdf';
+            Log::info('Saving PDF', ['filename' => $filename]);
 
-        if ($records->isEmpty()) {
+            Storage::disk('public')->put($filename, $pdf->output());
+            $basename = basename($filename);
+
+            Log::info('PDF generated successfully');
+
             $this->user->notify(
                 Notification::make()
-                    ->title('No Data Available')
-                    ->body('There is no data available to export at this time.')
-                    ->icon('heroicon-o-x-circle')
-                    ->danger()
+                    ->title('PDF Report Ready')
+                    ->body('The PDF report has been successfully generated. Click the button below to download it.')
+                    ->actions([
+                        \Filament\Notifications\Actions\Action::make('Download PDF')
+                            ->label('Download .pdf')
+                            ->color('success')
+                            ->markAsRead()
+                            ->url(route('download.pdf', ['filename' => $basename])),
+                    ])
+                    ->icon('heroicon-o-paper-clip')
+                    ->success()
                     ->toDatabase()
             );
-            return;
+        } catch (\Exception $e) {
+            Log::error('PDF generation failed', ['error' => $e->getMessage()]);
+            throw $e;
         }
-
-        $this->user->notify(
-            Notification::make()
-                ->title('PDF Report Ready')
-                ->body('The PDF report has been successfully generated. Click the button below to download it.')
-                ->actions([
-                    \Filament\Notifications\Actions\Action::make('Download PDF')
-                        ->label('Download .pdf')
-                        ->color('success')
-                        ->markAsRead()
-                        ->url(route('download.pdf', ['filename' => $basename])),
-                ])
-                ->icon('heroicon-o-paper-clip')
-                ->success()
-                ->toDatabase()
-        );
     }
 }
