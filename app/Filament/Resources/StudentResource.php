@@ -145,7 +145,7 @@ class StudentResource extends Resource
                                         'name' => $rowProperties['NAMA'],
                                         'title_of_the_final_project_proposal' => $rowProperties['JUDUL PROPOSAL TUGAS AKHIR'],
                                         'design_theme' => $rowProperties['TEMA RANCANGAN'],
-                                        'group_id' => \App\Models\Group::firstOrCreate(['name' => $rowProperties['KELOMPOK']])->id ?? null,
+                                        'group_id' => \App\Models\Group::firstOrCreate(['name' => $rowProperties['KELOMPOK']])->id,
                                     ]
                                 );
                             });
