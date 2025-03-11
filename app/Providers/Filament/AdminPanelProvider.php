@@ -4,7 +4,6 @@ namespace App\Providers\Filament;
 
 use Filament\Pages;
 use Filament\Panel;
-// use App\Models\Room;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Pages\Auth\Login;
@@ -31,8 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName(fn () => app()->environment('demo') ? 'Demo Assessment System' : 'Assessment System')
-            //            ->tenant(Room::class, ownershipRelationship: 'users')
+            ->brandName(fn() => app()->environment('demo') ? 'Demo Assessment System' : 'Assessment System')
             ->login(Login::class)
             ->colors([
                 'primary' => Color::Amber,
@@ -73,9 +71,6 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            //            ->tenantMiddleware([
-            //                \BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant::class,
-            //            ], isPersistent: true)
             ->authMiddleware([
                 Authenticate::class,
             ]);
