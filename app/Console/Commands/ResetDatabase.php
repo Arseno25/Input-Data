@@ -27,7 +27,7 @@ class ResetDatabase extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         if (App::environment('demo')) {
             Artisan::call('migrate:fresh --seed');
