@@ -14,6 +14,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 use Spatie\SimpleExcel\SimpleExcelReader;
@@ -154,6 +155,30 @@ class StudentResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('assign_group')
+                        ->label('Assign Group')
+                        ->icon('heroicon-o-user-group')
+                        ->form([
+                            Forms\Components\Select::make('group_id')
+                                ->label('Group')
+                                ->searchable()
+                                ->preload()
+                                ->relationship('group', 'name')
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name')
+                                        ->required()
+                                        ->maxLength(255),
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $records->each(function ($record) use ($data) {
+                                $record->update([
+                                    'group_id' => $data['group_id'],
+                                ]);
+                            });
+                        })
+                        ->deselectRecordsAfterCompletion()
                 ]),
             ]);
     }
