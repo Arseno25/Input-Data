@@ -35,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName(fn() => app()->environment('demo') ? 'Demo Assessment System' : $settings->website_title)
+            ->brandName(fn() => $settings->website_title ?? null)
             ->favicon(fn() => $settings->use_logo ? Storage::url('public/' . $settings->website_favicon) : null)
             ->login(Login::class)
             ->colors([
