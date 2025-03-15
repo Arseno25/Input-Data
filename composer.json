@@ -15,6 +15,8 @@
     "bezhansalleh/filament-language-switch": "^3.1",
     "bezhansalleh/filament-shield": "^3.3",
     "filament/filament": "^3.2",
+    "filament/spatie-laravel-media-library-plugin": "^3.3",
+    "filament/spatie-laravel-settings-plugin": "^3.3",
     "jeffgreco13/filament-breezy": "^2.5",
     "laravel/framework": "^11.31",
     "laravel/tinker": "^2.9",

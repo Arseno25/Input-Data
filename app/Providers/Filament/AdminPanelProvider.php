@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Settings\WebsiteSettings;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -9,6 +10,7 @@ use Filament\PanelProvider;
 use App\Filament\Pages\Auth\Login;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
+use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -26,11 +28,15 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+
+        $settings = app(WebsiteSettings::class);
+
         return $panel
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName(fn() => app()->environment('demo') ? 'Demo Assessment System' : 'Assessment System')
+            ->brandName(fn() => app()->environment('demo') ? 'Demo Assessment System' : $settings->website_title)
+            ->favicon(fn() => $settings->use_logo ? Storage::url('public/' . $settings->website_favicon) : null)
             ->login(Login::class)
             ->colors([
                 'primary' => Color::Amber,
