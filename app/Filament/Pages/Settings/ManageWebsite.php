@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Settings;
 
 use App\Settings\WebsiteSettings;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -28,7 +29,7 @@ class ManageWebsite extends SettingsPage
                 TextInput::make('website_title')
                     ->label('Website Name')
                     ->required(),
-                TextInput::make('website_description')
+                Textarea::make('website_description')
                     ->label('Website Description')
                     ->required(),
                 Toggle::make('use_logo')
