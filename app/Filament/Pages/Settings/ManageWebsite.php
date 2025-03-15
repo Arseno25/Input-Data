@@ -32,7 +32,7 @@ class ManageWebsite extends SettingsPage
                     ->label('Deskripsi Website')
                     ->required(),
                 Toggle::make('use_logo')
-                    ->label('Use Website Logo')
+                    ->label('Website Logo')
                     ->default(false)
                     ->columnSpanFull()
                     ->live(),
