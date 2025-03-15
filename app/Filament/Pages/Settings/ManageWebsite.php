@@ -26,10 +26,10 @@ class ManageWebsite extends SettingsPage
         return $form
             ->schema([
                 TextInput::make('website_title')
-                    ->label('Name Website')
+                    ->label('Website Name')
                     ->required(),
                 TextInput::make('website_description')
-                    ->label('Deskripsi Website')
+                    ->label('Website Description')
                     ->required(),
                 Toggle::make('use_logo')
                     ->label('Website Logo')
@@ -37,13 +37,13 @@ class ManageWebsite extends SettingsPage
                     ->columnSpanFull()
                     ->live(),
                 FileUpload::make('website_logo')
-                    ->label('Logo Website')
+                    ->label('Website Logo')
                     ->maxWidth('200px')
                     ->visible(fn(Get $get) => $get('use_logo'))
                     ->reactive()
                     ->directory('/assets/weblogo'),
                 FileUpload::make('website_favicon')
-                    ->label('Favicon Website')
+                    ->label('Website Favicon')
                     ->visible(fn(Get $get) => $get('use_logo'))
                     ->reactive()
                     ->directory('/settings'),
