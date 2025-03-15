@@ -3,11 +3,8 @@
 
     $settings = app(WebsiteSettings::class);
     $brandName = $settings->website_title;
-    $logoUrl = $settings->use_logo ? asset('storage/' . $settings->website_logo) : null;
-
-    if ($logoUrl && !\Illuminate\Support\Facades\Storage::exists('public/' . $settings->website_logo)) {
-        $logoUrl = null;
-    }
+    $logoPath = $settings->website_logo ? storage_path('app/public/' . $settings->website_logo) : null;
+    $logoUrl = $settings->use_logo && $logoPath && file_exists($logoPath) ? \Illuminate\Support\Facades\Storage::url('public/' . $settings->website_logo) : null;
 
     $brandNames = filament()->getBrandName();
     $brandLogo = filament()->getBrandLogo();
@@ -25,7 +22,6 @@
     $logoStyles = "height: 40px";
 @endphp
 
-
 @capture($content, $logo, $isDarkMode = false)
 @if ($logo instanceof \Illuminate\Contracts\Support\Htmlable)
     <div
@@ -37,17 +33,7 @@
     >
         {{ $logo }}
     </div>
-@elseif (filled($logoUrl))
-    <img
-            alt="{{ __('filament-panels::layout.logo.alt', ['name' => $brandName]) }}"
-            src="{{ $logoUrl }}"
-            {{
-                $attributes
-                    ->class([$getLogoClasses($isDarkMode)])
-                    ->style([$logoStyles])
-            }}
-    />
-@else
+@elseif (empty($logoUrl))
     <div
             {{
                 $attributes->class([
@@ -58,6 +44,16 @@
     >
         {{ $brandName }}
     </div>
+@else
+    <img
+            alt="{{ __('filament-panels::layout.logo.alt', ['name' => $brandName]) }}"
+            src="{{ $logoUrl }}"
+            {{
+                $attributes
+                    ->class([$getLogoClasses($isDarkMode)])
+                    ->style([$logoStyles])
+            }}
+    />
 @endif
 @endcapture
 
