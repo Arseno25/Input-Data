@@ -31,24 +31,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'dosen 1',
             'email' => 'dosen1@gmail.com',
         ]);
-        $dosen2 = User::factory()->create([
-            'name' => 'dosen 2',
-            'email' => 'dosen2@gmail.com',
-        ]);
-
-        $dosen3 = User::factory()->create([
-            'name' => 'penguji 1',
-            'email' => 'penguji1@gmail.com',
-        ]);
-        $dosen4 = User::factory()->create([
-            'name' => 'penguji 2',
-            'email' => 'penguji2@gmail.com',
-        ]);
 
         $dosen1->assignRole('lecturer');
-        $dosen2->assignRole('lecturer');
-        $dosen3->assignRole('lecturer');
-        $dosen4->assignRole('lecturer');
 
         Artisan::call('shield:super-admin', ['--user' => $admin->getKey()]);
         Artisan::call('shield:generate', ['--all' => true, '--panel' => 'admin']);

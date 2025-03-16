@@ -140,6 +140,16 @@ class AssessmentResource extends Resource
                                 return $locale == 'id' ? 'Penilaian' : 'Assessment';
                             })
                             ->required()
+                            ->default([
+                                'ZONING' => 0,
+                                'TATA MASA/BLOK PLAN' => 0,
+                                'INFRASTRUKTUR TAPAK' => 0,
+                                'LANDSCAPE/RUANG LUAR' => 0,
+                                'ASPEK STANDAR/TEKNIS/PERATURAN' => 0,
+                                'TEMA RANCANGAN' => 0,
+                                'KUALITAS DAN KELENGKAPAN' => 0,
+                                'TEKNIK PRESENTASI DAN KOMUNIKASI' => 0,
+                            ])
                             ->helperText(function () {
                                 $locale = app()->getLocale();
                                 if ($locale == 'id') {
