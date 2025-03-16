@@ -39,7 +39,7 @@ class AssessmentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()->with('student', 'student.group');
 
         if (auth()->user()->hasRole('super_admin')) {
             return $query;
@@ -89,6 +89,13 @@ class AssessmentResource extends Resource
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($student = \App\Models\Student::find($state)) {
+                                    $set('student.nim', $student->nim);
+                                    $set('student.title_of_the_final_project_proposal', $student->title_of_the_final_project_proposal);
+                                    $set('student.design_theme', $student->design_theme);
+                                }
+                            })
+                            ->loadStateFromRelationshipsUsing(function (Forms\Get $get, Forms\Set $set, $state) {
                                 if ($student = \App\Models\Student::find($state)) {
                                     $set('student.nim', $student->nim);
                                     $set('student.title_of_the_final_project_proposal', $student->title_of_the_final_project_proposal);
