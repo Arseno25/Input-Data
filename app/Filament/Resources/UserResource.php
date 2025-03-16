@@ -32,20 +32,20 @@ class UserResource extends Resource
     protected static bool $isScopedToTenant = false;
 
     public static function getEloquentQuery(): Builder
-{
-    $query = parent::getEloquentQuery();
+    {
+        $query = parent::getEloquentQuery();
 
-    if (auth()->user()->hasRole('demo')) {
-        if (app()->environment('demo')) {
-            return $query->whereHas('roles', function ($q) {
-                $q->where('name', 'demo');
-            });
+        if (auth()->user()->hasRole('demo')) {
+            if (app()->environment('demo')) {
+                return $query->whereHas('roles', function ($q) {
+                    $q->where('name', 'demo');
+                });
+            }
+            return $query;
         }
-        return $query;
-    }
 
-    return $query->withoutGlobalScope(SoftDeletingScope::class);
-}
+        return $query->withoutGlobalScope(SoftDeletingScope::class);
+    }
 
     public static function form(Form $form): Form
     {
