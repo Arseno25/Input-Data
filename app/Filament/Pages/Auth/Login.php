@@ -40,7 +40,7 @@ class Login extends BaseAuth
             ->required()
             ->autocomplete()
             ->autofocus()
-            ->default(fn () => app()->environment('demo') ? 'demo@example.com' : null)
+            ->default(fn() => app()->environment('demo') ? 'demo@example.com' : null)
             ->extraInputAttributes(['tabindex' => 1]);
     }
 
@@ -53,7 +53,7 @@ class Login extends BaseAuth
             ->revealable(filament()->arePasswordsRevealable())
             ->autocomplete('current-password')
             ->required()
-            ->default(fn () => app()->environment('demo') ? 'password' : null)
+            ->default(fn() => app()->environment('demo') ? 'password' : null)
             ->extraInputAttributes(['tabindex' => 2]);
     }
 

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 
 Route::get('/', function () {
-    return redirect('/admin');
+    return redirect('/lecturer');
 });
 
 Route::get('/download-pdf/{filename}', function ($filename) {

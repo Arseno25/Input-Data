@@ -13,6 +13,8 @@ class Assessment extends Model
         'lecturer_id',
         'assessment_stage',
         'assessment',
+        'notes',
+        'type'
     ];
 
     protected $casts = [
@@ -33,7 +35,4 @@ class Assessment extends Model
     {
         return $this->belongsTo(User::class, 'lecturer_id');
     }
-
-
-
 }

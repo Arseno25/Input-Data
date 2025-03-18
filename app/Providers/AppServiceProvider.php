@@ -2,14 +2,17 @@
 
 namespace App\Providers;
 
-use App\Models\Permission;
-use App\Models\Role;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    public $singletons = [
+        \Filament\Http\Responses\Auth\Contracts\LoginResponse::class => \App\Http\Responses\LoginResponse::class,
+        \Filament\Http\Responses\Auth\Contracts\LogoutResponse::class => \App\Http\Responses\LogoutResponse::class,
+    ];
     /**
      * Register any application services.
      */
@@ -23,11 +26,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-//        app(\Spatie\Permission\PermissionRegistrar::class)
-//            ->setPermissionClass(Permission::class)
-//            ->setRoleClass(Role::class);
-//
-//        Filament::getTenant();
+        //        app(\Spatie\Permission\PermissionRegistrar::class)
+        //            ->setPermissionClass(Permission::class)
+        //            ->setRoleClass(Role::class);
+        //
+        //        Filament::getTenant();
 
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
