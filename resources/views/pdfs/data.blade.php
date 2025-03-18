@@ -56,6 +56,7 @@
             <td>{{ $record->student->group->name }}</td>
             <td>{{ $record->assessment_stage }}</td>
             <td>{{ is_array($record->assessment) ? implode(', ', $record->assessment) : $record->assessment }}</td>
+            <td>{{ $record->notes}}</td>
 
 
         </tr>
