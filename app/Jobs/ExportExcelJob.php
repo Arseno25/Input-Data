@@ -43,6 +43,7 @@ class ExportExcelJob implements ShouldQueue
 
         try {
             $records = $this->fetchRecords();
+
             if ($records->isEmpty()) {
                 $this->handleNoRecordsFound();
                 return;
@@ -67,17 +68,19 @@ class ExportExcelJob implements ShouldQueue
 
     private function fetchRecords(): Collection
     {
-        if ($this->studentIds === null) {
-            return Assessment::with(['student', 'group'])->get();
+        if (empty($this->studentIds)) {
+            return Assessment::with(['student'])->get();
         }
 
-        return Assessment::with(['student', 'group'])
+        return Assessment::with(['student'])
             ->whereIn('student_id', $this->studentIds)
-            ->get(); // Fetch records for the specific students
+            ->get();
     }
 
     private function handleNoRecordsFound(): void
     {
+        $studentIds = empty($this->studentIds) ? 'ALL_STUDENTS' : implode(', ', $this->studentIds);
+
         Log::info('No records found for selected student IDs: ' . implode(', ', $this->studentIds));
         $this->user->notify(
             Notification::make()
@@ -96,7 +99,7 @@ class ExportExcelJob implements ShouldQueue
 
     private function getHeader(): array
     {
-        return ['Nama', 'NIM', 'Judul Proposal Tugas Akhir', 'Tema Rancangan', 'Kelompok', 'Tahap Penilaian', 'Nilai', 'Catatan'];
+        return ['Nama', 'NIM', 'Judul Proposal Tugas Akhir', 'Tema Rancangan', 'Kelompok', 'Tahap Penilaian', 'Dosen Penilai', 'Nilai', 'Catatan'];
     }
 
     private function prepareRows(Collection $records): Collection
@@ -109,6 +112,7 @@ class ExportExcelJob implements ShouldQueue
                 $assessment->student->design_theme,
                 $assessment->group->name,
                 $assessment->assessment_stage,
+                $assessment->user->name,
                 is_array($assessment->assessment) ? implode(', ', $assessment->assessment) : json_encode($assessment->assessment),
                 $assessment->notes,
             ];

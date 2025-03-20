@@ -42,6 +42,7 @@
         <th>Tema Rancangan</th>
         <th>Kelompok</th>
         <th>Tahap Penilaian</th>
+        <th>Dosen Penilai</th>
         <th>Nilai</th>
         <th>Catatan</th>
     </tr>
@@ -56,6 +57,7 @@
             <td>{{ $record->student->design_theme }}</td>
             <td>{{ $record->student->group->name }}</td>
             <td>{{ $record->assessment_stage }}</td>
+            <td>{{ $record->user->name }}</td>
             <td>{{ is_array($record->assessment) ? implode(', ', $record->assessment) : $record->assessment }}</td>
             <td>{{ $record->notes}}</td>
 

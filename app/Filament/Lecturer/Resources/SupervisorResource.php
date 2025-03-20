@@ -252,7 +252,7 @@ class SupervisorResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
                 Tables\Actions\ExportAction::make()

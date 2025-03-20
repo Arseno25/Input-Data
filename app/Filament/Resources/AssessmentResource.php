@@ -274,7 +274,7 @@ class AssessmentResource extends Resource
                     ])
                     ->action(function ($data) {
                         $user = auth()->user();
-                        $studentIds = $data['export_all'] ? null : [$data['student_id']];
+                        $studentIds = $data['export_all'] ? [] : [$data['student_id']];
 
                         try {
                             Bus::chain([
