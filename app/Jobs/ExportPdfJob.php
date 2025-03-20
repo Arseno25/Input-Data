@@ -59,7 +59,7 @@ class ExportPdfJob implements ShouldQueue
 
     private function fetchRecords(): Collection
     {
-        if ($this->studentId === true) {
+        if (empty($this->studentIds)) {
             return Assessment::with(['student'])->get();
         }
 
@@ -70,6 +70,8 @@ class ExportPdfJob implements ShouldQueue
 
     private function handleNoRecordsFound(): void
     {
+        $studentId = empty($this->studentId) ? 'ALL_STUDENTS' : implode(', ', $this->studentId);
+
         Log::info('No records found for student ID: ' . $this->studentId);
         $this->user->notify(
             Notification::make()
