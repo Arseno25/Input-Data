@@ -252,15 +252,30 @@ class AssessmentResource extends Resource
                     ->modal()
                     ->modalWidth('sm')
                     ->form([
-                        Forms\Components\Select::make('student_id')
-                            ->label('Select Student')
-                            ->preload()
-                            ->searchable()
-                            ->relationship('student', 'name')
+                        Forms\Components\Fieldset::make('Export Options')
+                            ->columns(1)
+                            ->schema([
+                                Forms\Components\Select::make('student_id')
+                                    ->label('Select Student')
+                                    ->preload()
+                                    ->searchable()
+                                    ->placeholder('Select Student')
+                                    ->helperText('Export specific students')
+                                    ->relationship('student', 'name')
+                                    ->live()
+                                    ->disabled(fn($get) => $get('export_all'))
+                                    ->required(fn($get) => !$get('export_all')),
+                                Forms\Components\Checkbox::make('export_all')
+                                    ->label('Export All Students')
+                                    ->live()
+                                    ->helperText('Export all students in the table')
+                                    ->default(false),
+                            ])
                     ])
                     ->action(function ($data) {
                         $user = auth()->user();
-                        $studentIds = [$data['student_id']];
+                        $studentIds = $data['export_all'] ? null : [$data['student_id']];
+
                         try {
                             Bus::chain([
                                 new ExportExcelJob($studentIds, $user),
@@ -286,15 +301,29 @@ class AssessmentResource extends Resource
                     ->modal()
                     ->modalWidth('sm')
                     ->form([
-                        Forms\Components\Select::make('student_id')
-                            ->label('Select Student')
-                            ->preload()
-                            ->searchable()
-                            ->relationship('student', 'name')
+                        Forms\Components\Fieldset::make('Export Options')
+                            ->columns(1)
+                            ->schema([
+                                Forms\Components\Select::make('student_id')
+                                    ->label('Select Student')
+                                    ->preload()
+                                    ->searchable()
+                                    ->placeholder('Select Student')
+                                    ->relationship('student', 'name')
+                                    ->helperText('Export specific students')
+                                    ->live()
+                                    ->disabled(fn($get) => $get('export_all'))
+                                    ->required(fn($get) => !$get('export_all')),
+                                Forms\Components\Checkbox::make('export_all')
+                                    ->label('Export All Students')
+                                    ->live()
+                                    ->helperText('Export all students in the table')
+                                    ->default(false),
+                            ])
                     ])
                     ->action(function ($data) {
                         $user = auth()->user();
-                        $studentId = $data['student_id'];
+                        $studentId = $data['export_all'] ? null : [$data['student_id']];
 
                         try {
                             Bus::chain([

@@ -59,6 +59,10 @@ class ExportPdfJob implements ShouldQueue
 
     private function fetchRecords(): Collection
     {
+        if ($this->studentId === null) {
+            return Assessment::with(['student'])->get();
+        }
+
         return Assessment::with(['student'])
             ->where('student_id', $this->studentId)
             ->get();

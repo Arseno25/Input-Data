@@ -67,9 +67,13 @@ class ExportExcelJob implements ShouldQueue
 
     private function fetchRecords(): Collection
     {
+        if ($this->studentIds === null) {
+            return Assessment::with(['student', 'group'])->get();
+        }
+
         return Assessment::with(['student', 'group'])
             ->whereIn('student_id', $this->studentIds)
-            ->get();
+            ->get(); // Fetch records for the specific students
     }
 
     private function handleNoRecordsFound(): void
@@ -124,13 +128,13 @@ class ExportExcelJob implements ShouldQueue
         $headerRow = Row::fromValues($header);
         $headerRow->setStyle($styleHeader);
         $writer->addRow($headerRow);
-        $options->setColumnWidth(40, 1);
-        $options->setColumnWidth(40, 2);
-        $options->setColumnWidth(40, 3);
-        $options->setColumnWidth(40, 4);
-        $options->setColumnWidth(40, 5);
-        $options->setColumnWidth(40, 6);
-        $options->setColumnWidth(40, 7);
+        $options->setColumnWidth(30, 1);
+        $options->setColumnWidth(30, 2);
+        $options->setColumnWidth(30, 3);
+        $options->setColumnWidth(30, 4);
+        $options->setColumnWidth(30, 5);
+        $options->setColumnWidth(30, 6);
+        $options->setColumnWidth(30, 7);
         $options->setColumnWidthForRange(40, 1, 9);
 
         // Apply cell style to each row
