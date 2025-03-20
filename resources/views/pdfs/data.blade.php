@@ -7,6 +7,8 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            padding: 0;
+            margin: 0;
         }
 
         table, th, td {
@@ -14,7 +16,7 @@
         }
 
         th, td {
-            padding: 10px;
+            padding: 2px;
             text-align: left;
         }
 

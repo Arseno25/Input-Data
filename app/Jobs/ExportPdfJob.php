@@ -91,7 +91,7 @@ class ExportPdfJob implements ShouldQueue
     private function generatePdf(Collection $records, string $filename): void
     {
         $pdf = Pdf::loadView('pdfs.data', ['records' => $records])
-            ->setPaper('a4', 'landscape');
+            ->setPaper('A4', 'landscape');
 
         Storage::disk('public')->put($filename, $pdf->output());
     }
