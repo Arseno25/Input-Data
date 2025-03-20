@@ -9,11 +9,14 @@ use Filament\Forms\Form;
 use App\Models\Assessment;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use App\Jobs\GeneratePdfJob;
+use App\Jobs\ExportExcelJob;
+use App\Jobs\ExportPdfJob;
 use Filament\Facades\Filament;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Bus;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use pxlrbt\FilamentExcel\Columns\Column;
 use Illuminate\Database\Eloquent\Builder;
@@ -200,6 +203,7 @@ class AssessmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultGroup('student.name', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('student.name')
                     ->label('Name')
@@ -242,22 +246,60 @@ class AssessmentResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
-                Tables\Actions\ExportAction::make()
+                Tables\Actions\Action::make('export_excel')
                     ->label('Export Excel')
                     ->icon('heroicon-o-document-arrow-up')
-                    ->color('success')
-                    ->exporter(AssessmentExporter::class),
-                Tables\Actions\Action::make('Export PDF')
+                    ->modal()
+                    ->modalWidth('sm')
+                    ->form([
+                        Forms\Components\Select::make('student_id')
+                            ->label('Select Student')
+                            ->preload()
+                            ->searchable()
+                            ->relationship('student', 'name')
+                    ])
+                    ->action(function ($data) {
+                        $user = auth()->user();
+                        $studentIds = [$data['student_id']];
+                        try {
+                            Bus::chain([
+                                new ExportExcelJob($studentIds, $user),
+                            ])->dispatch();
+                            Notification::make()
+                                ->title('Export Process in Progress')
+                                ->body('The Excel is being processed. You will receive a notification when it is finished.')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            throw $e;
+                            Notification::make()
+                                ->title('Export Process Failed')
+                                ->body('Error ' . $e)
+                                ->success()
+                                ->send();
+                        }
+                    }),
+                Tables\Actions\Action::make('export_pdf')
                     ->label('Export PDF')
                     ->icon('heroicon-o-document-arrow-up')
                     ->color('danger')
-                    ->action(function () {
+                    ->modal()
+                    ->modalWidth('sm')
+                    ->form([
+                        Forms\Components\Select::make('student_id')
+                            ->label('Select Student')
+                            ->preload()
+                            ->searchable()
+                            ->relationship('student', 'name')
+                    ])
+                    ->action(function ($data) {
                         $user = auth()->user();
+                        $studentId = $data['student_id'];
 
                         try {
-                            \Log::info('Dispatching PDF job', ['user_id' => $user->id]);
-                            $job = new GeneratePdfJob($user);
-                            dispatch($job);
+                            Bus::chain([
+                                new ExportPdfJob($studentId, $user),
+                            ])->dispatch();
 
                             Notification::make()
                                 ->title('Export Process in Progress')
@@ -267,6 +309,11 @@ class AssessmentResource extends Resource
                         } catch (\Exception $e) {
                             \Log::error('PDF job error', ['error' => $e->getMessage()]);
                             throw $e;
+                            Notification::make()
+                                ->title('Export Process Failed')
+                                ->body('Error ' . $e)
+                                ->success()
+                                ->send();
                         }
                     }),
             ])

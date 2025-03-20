@@ -43,6 +43,7 @@
         <th>Kelompok</th>
         <th>Tahap Penilaian</th>
         <th>Nilai</th>
+        <th>Catatan</th>
     </tr>
     </thead>
     <tbody>
