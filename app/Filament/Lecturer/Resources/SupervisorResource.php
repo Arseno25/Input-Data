@@ -7,11 +7,8 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Assessment;
 use Filament\Tables\Table;
-use App\Jobs\GeneratePdfJob;
 use Filament\Resources\Resource;
-use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Exports\AssessmentExporter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Lecturer\Resources\SupervisorResource\Pages;
 use App\Filament\Lecturer\Resources\SupervisorResource\RelationManagers;
@@ -255,35 +252,7 @@ class SupervisorResource extends Resource
                 // Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
-                Tables\Actions\ExportAction::make()
-                    ->label('Export Excel')
-                    ->hidden(fn() => !auth()->user()->hasRole('super_admin'))
-                    ->icon('heroicon-o-document-arrow-up')
-                    ->color('success')
-                    ->exporter(AssessmentExporter::class),
-                Tables\Actions\Action::make('Export PDF')
-                    ->label('Export PDF')
-                    ->icon('heroicon-o-document-arrow-up')
-                    ->color('danger')
-                    ->hidden(fn() => !auth()->user()->hasRole('super_admin'))
-                    ->action(function () {
-                        $user = auth()->user();
-
-                        try {
-                            \Log::info('Dispatching PDF job', ['user_id' => $user->id]);
-                            $job = new GeneratePdfJob($user);
-                            dispatch($job);
-
-                            Notification::make()
-                                ->title('Export Process in Progress')
-                                ->body('The PDF is being processed. You will receive a notification when it is finished.')
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            \Log::error('PDF job error', ['error' => $e->getMessage()]);
-                            throw $e;
-                        }
-                    }),
+                //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

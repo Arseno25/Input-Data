@@ -128,7 +128,6 @@ class ExportExcelJob implements ShouldQueue
         $writer = new Writer($options);
         $writer->openToFile($filename);
 
-        // Apply header style
         $headerRow = Row::fromValues($header);
         $headerRow->setStyle($styleHeader);
         $writer->addRow($headerRow);
@@ -139,9 +138,8 @@ class ExportExcelJob implements ShouldQueue
         $options->setColumnWidth(30, 5);
         $options->setColumnWidth(30, 6);
         $options->setColumnWidth(30, 7);
-        $options->setColumnWidthForRange(40, 1, 9);
+        $options->setColumnWidthForRange(25, 1, 9);
 
-        // Apply cell style to each row
         foreach ($rows as $rowValues) {
             $row = Row::fromValues($rowValues);
             $row->setStyle($styleCell);
