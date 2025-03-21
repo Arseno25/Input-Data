@@ -249,7 +249,7 @@ class ExaminerResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                //
             ])
             ->headerActions([
                 //
