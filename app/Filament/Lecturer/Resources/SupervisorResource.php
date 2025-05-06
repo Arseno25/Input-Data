@@ -129,27 +129,41 @@ class SupervisorResource extends Resource
                             ->columnSpanFull()
                             ->options([
                                 'Penilaian Tahap 1' => 'Stage 1 Assessment (Penilaian Tahap 1)',
-                                'Penilaian Tahap 2' => 'Stage 1 Assessment (Penilaian Tahap 2)',
-                                'Penilaian Tahap 3' => 'Stage 1 Assessment (Penilaian Tahap 3)',
-                                'Penilaian Tahap 4' => 'Stage 1 Assessment (Penilaian Tahap 4)',
+                                'Penilaian Tahap 2' => 'Stage 2 Assessment (Penilaian Tahap 2)',
+                                'Penilaian Tahap 3' => 'Stage 3 Assessment (Penilaian Tahap 3)',
+                                'Penilaian Tahap 4' => 'Stage 4 Assessment (Penilaian Tahap 4)',
                             ])
-                            ->required(),
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state, $record) {
+                                $assessmentData = self::getAssessmentData($state);
+                                
+                                // If record exists, try to load saved assessment data from database first
+                                if ($record) {
+                                    $existingAssessment = Assessment::where('student_id', $get('student_id'))
+                                        ->where('assessment_stage', $state)
+                                        ->first();
+                                        
+                                    if ($existingAssessment && !empty($existingAssessment->assessment)) {
+                                        // Use maintainAssessmentOrder to preserve the correct order of keys
+                                        $orderedAssessment = self::maintainAssessmentOrder(
+                                            $existingAssessment->assessment,
+                                            $assessmentData
+                                        );
+                                        $set('assessment', $orderedAssessment);
+                                        return;
+                                    }
+                                }
+                                
+                                // Otherwise use default assessment data
+                                $set('assessment', $assessmentData);
+                            }),
                         Forms\Components\KeyValue::make('assessment')
                             ->label(function () {
                                 $locale = app()->getLocale();
                                 return $locale == 'id' ? 'Penilaian' : 'Assessment';
                             })
                             ->required()
-                            ->default([
-                                'ZONING' => 0,
-                                'TATA MASA/BLOK PLAN' => 0,
-                                'INFRASTRUKTUR TAPAK' => 0,
-                                'LANDSCAPE/RUANG LUAR' => 0,
-                                'ASPEK STANDAR/TEKNIS/PERATURAN' => 0,
-                                'TEMA RANCANGAN' => 0,
-                                'KUALITAS DAN KELENGKAPAN' => 0,
-                                'TEKNIK PRESENTASI DAN KOMUNIKASI' => 0,
-                            ])
                             ->disableDeletingRows()
                             ->disableAddingRows()
                             ->disableEditingKeys()
@@ -197,6 +211,70 @@ class SupervisorResource extends Resource
                             ->default('supervisor'),
                     ]),
             ]);
+    }
+
+    public static function getAssessmentData(string $stage): array
+    {
+        switch ($stage) {
+            case 'Penilaian Tahap 1':
+                return [
+                    'ZONING' => 0,
+                    'TATA MASA/BLOK PLAN' => 0,
+                    'INFRASTRUKTUR TAPAK' => 0,
+                    'LANDSCAPE/RUANG LUAR' => 0,
+                    'ASPEK STANDAR/TEKNIS/PERATURAN' => 0,
+                    'TEMA RANCANGAN' => 0,
+                    'KUALITAS DAN KELENGKAPAN' => 0,
+                    'TEKNIK PRESENTASI DAN KOMUNIKASI' => 0,
+                ];
+            case 'Penilaian Tahap 2':
+                return [
+                    'ZONING LANTAI' => 0,
+                    'SIRKULASI' => 0,
+                    'BENTUK, RUANG, STRUKTUR, UTILITAS' => 0,
+                    'MATERIAL' => 0,
+                    'ASPEK STANDAR/TEKNIS/PERATURAN' => 0,
+                    'TEMA RANCANGAN' => 0,
+                    'KUALITAS DAN KELENGKAPAN' => 0,
+                    'TEKNIK PRESENTASI DAN KOMUNIKASI' => 0,
+                ];
+            case 'Penilaian Tahap 3':
+                return [
+                    'KRITERIA 1' => 0,
+                    'KRITERIA 2' => 0,
+                    'KRITERIA 3' => 0,
+                    'KRITERIA 4' => 0,
+                ];
+            case 'Penilaian Tahap 4':
+                return [
+                    'KRITERIA 1' => 0,
+                    'KRITERIA 2' => 0,
+                    'KRITERIA 3' => 0,
+                    'KRITERIA 4' => 0,
+                ];
+            default:
+                return [
+                    null
+                ];
+        }
+    }
+
+    private static function maintainAssessmentOrder(array $existingData, array $template): array
+    {
+        $result = [];
+        // First add keys from template in their original order
+        foreach ($template as $key => $defaultValue) {
+            $result[$key] = array_key_exists($key, $existingData) ? $existingData[$key] : $defaultValue;
+        }
+        
+        // Then add any extra keys from existing data that weren't in the template
+        foreach ($existingData as $key => $value) {
+            if (!array_key_exists($key, $result)) {
+                $result[$key] = $value;
+            }
+        }
+        
+        return $result;
     }
 
     public static function table(Table $table): Table
