@@ -6,7 +6,7 @@ if (!file_exists($artisanPath)) {
     die("File 'artisan' tidak ditemukan di path: $artisanPath\n");
 }
 
-$command = "php $artisanPath queue:work --sleep=3 --tries=3 --timeout=60";
+$command = "php $artisanPath queue:work";
 
 $descriptorspec = [
     1 => ['pipe', 'w'], // stdout
