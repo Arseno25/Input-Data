@@ -17,10 +17,11 @@ use OpenSpout\Writer\XLSX\Options;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use OpenSpout\Common\Entity\Style\CellAlignment;
+use App\Traits\EnsureExportDirectory;
 
 class ExportExcelJob implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, EnsureExportDirectory;
 
     protected array $studentIds;
     protected $user;
@@ -48,6 +49,8 @@ class ExportExcelJob implements ShouldQueue
                 $this->handleNoRecordsFound();
                 return;
             }
+
+            $this->ensureExportsFolderExists();
 
             $filename = $this->generateFilename();
             Log::info('Saving Excel file', ['filename' => $filename]);

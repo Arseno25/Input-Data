@@ -18,10 +18,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Database\Eloquent\Collection;
+use App\Traits\EnsureExportDirectory;
 
 class ExportPdfJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, EnsureExportDirectory;
 
     protected $studentId;
     protected $user;
@@ -42,6 +43,8 @@ class ExportPdfJob implements ShouldQueue
                 $this->handleNoRecordsFound();
                 return;
             }
+
+            $this->ensureExportsFolderExists();
 
             $filename = $this->generateFilename();
             Log::info('Saving PDF', ['filename' => $filename]);
