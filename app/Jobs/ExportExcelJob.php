@@ -109,15 +109,15 @@ class ExportExcelJob implements ShouldQueue
     {
         return $records->map(function ($assessment) {
             return [
-                $assessment->student->name,
-                $assessment->student->nim,
-                $assessment->student->title_of_the_final_project_proposal,
-                $assessment->student->design_theme,
-                $assessment->group->name,
-                $assessment->assessment_stage,
-                $assessment->user->name,
+                optional($assessment->student)->name ?? '-',
+                optional($assessment->student)->nim ?? '-',
+                optional($assessment->student)->title_of_the_final_project_proposal ?? '-',
+                optional($assessment->student)->design_theme ?? '-',
+                optional($assessment->group)->name ?? '-',
+                $assessment->assessment_stage ?? '-',
+                optional($assessment->user)->name ?? '-',
                 is_array($assessment->assessment) ? implode(', ', $assessment->assessment) : json_encode($assessment->assessment),
-                $assessment->notes,
+                $assessment->notes ?? '-',
             ];
         });
     }
