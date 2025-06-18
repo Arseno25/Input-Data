@@ -35,6 +35,7 @@ class ExportPdfJob implements ShouldQueue
 
     public function handle(): void
     {
+        ini_set('memory_limit', '512M');
         Log::info('Starting PDF generation');
 
         try {
