@@ -215,16 +215,17 @@ class AssessmentResource extends Resource
                                 return 'Score';
                             })
                             ->columnSpanFull()
-                    // ->addActionLabel(function () {
-                    //     $locale = app()->getLocale();
+                    ->addActionLabel(function () {
+                        $locale = app()->getLocale();
 
-                    //     if ($locale == 'id') {
-                    //         return 'Tambah Nilai';
-                    //     }
+                    if ($locale == 'id') {
+                        return 'Tambah Nilai';
+                    }
 
-                    //     return 'Add Score';
-                    // })
-                    ->columnSpanFull(),
+                        return 'Add Score';
+                    })
+                    ->columnSpanFull()
+                    ->addable(false),
                     ]),
             ]);
     }
