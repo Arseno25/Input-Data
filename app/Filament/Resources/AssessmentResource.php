@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AssessmentResource\Pages;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use App\Filament\Resources\AssessmentResource\RelationManagers;
+use App\Models\AssessmentTemplate;
 
 class AssessmentResource extends Resource
 {
@@ -141,26 +142,34 @@ class AssessmentResource extends Resource
                         Forms\Components\Select::make('assessment_stage')
                             ->label(function () {
                                 $locale = app()->getLocale();
-                                return $locale = 'id' ? 'Tahap Penilaian' : 'Assessment Stage';
+                    return $locale == 'id' ? 'Tahap Penilaian' : 'Assessment Stage';
                             })
                             ->columnSpanFull()
-                            ->options([
+                    ->options(function () {
+                        $stages = \App\Models\AssessmentTemplate::pluck('stage', 'stage')->toArray();
+                        if (empty($stages)) {
+                            return [
                                 'Penilaian Tahap 1' => 'Stage 1 Assessment (Penilaian Tahap 1)',
                                 'Penilaian Tahap 2' => 'Stage 2 Assessment (Penilaian Tahap 2)',
                                 'Penilaian Tahap 3' => 'Stage 3 Assessment (Penilaian Tahap 3)',
                                 'Penilaian Tahap 4' => 'Stage 4 Assessment (Penilaian Tahap 4)',
-                            ])
+                        ];
+                    }
+                    return $stages;
+                })
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state, $record) {
-                                $assessmentData = self::getAssessmentData($state);
-                                
+                    if (empty($state)) {
+                        $set('assessment', []);
+                        return;
+                    }
+                    $assessmentData = self::getAssessmentData($state);
                                 // If record exists, try to load saved assessment data from database first
                                 if ($record) {
                                     $existingAssessment = Assessment::where('student_id', $get('student_id'))
                                         ->where('assessment_stage', $state)
-                                        ->first();
-                                        
+                            ->first();
                                     if ($existingAssessment && !empty($existingAssessment->assessment)) {
                                         // Use maintainAssessmentOrder to preserve the correct order of keys
                                         $orderedAssessment = self::maintainAssessmentOrder(
@@ -170,8 +179,7 @@ class AssessmentResource extends Resource
                                         $set('assessment', $orderedAssessment);
                                         return;
                                     }
-                                }
-                                
+                    }
                                 // Otherwise use default assessment data
                                 $set('assessment', $assessmentData);
                             }),
@@ -223,12 +231,22 @@ class AssessmentResource extends Resource
 
     /**
      * Get assessment data based on assessment stage
-     * 
+     *
      * @param string $stage
      * @return array
      */
     public static function getAssessmentData(string $stage): array
     {
+        if (empty($stage)) {
+            return [];
+        }
+        // Cek di tabel assessment_templates
+        $template = AssessmentTemplate::where('stage', $stage)->first();
+        if ($template && is_array($template->labels)) {
+            // labels: [label => default_value]
+            return $template->labels;
+        }
+        // fallback lama
         switch ($stage) {
             case 'Penilaian Tahap 1':
                 return [
@@ -275,10 +293,10 @@ class AssessmentResource extends Resource
                 ];
         }
     }
-    
+
     /**
      * Maintain assessment order when loading from database
-     * 
+     *
      * @param array $existingData
      * @param array $template
      * @return array
@@ -290,14 +308,14 @@ class AssessmentResource extends Resource
         foreach ($template as $key => $defaultValue) {
             $result[$key] = array_key_exists($key, $existingData) ? $existingData[$key] : $defaultValue;
         }
-        
+
         // Then add any extra keys from existing data that weren't in the template
         foreach ($existingData as $key => $value) {
             if (!array_key_exists($key, $result)) {
                 $result[$key] = $value;
             }
         }
-        
+
         return $result;
     }
 
