@@ -37,7 +37,8 @@ class AssessmentTemplateResource extends Resource
                     ->addActionLabel('Add Label')
                     ->required()
                     ->helperText('Masukkan label penilaian dan nilai default (biasanya 0).'),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
